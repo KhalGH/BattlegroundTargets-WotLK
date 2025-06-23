@@ -1,0 +1,33 @@
+﻿## Interface: 30300
+## Author: kunda
+## Title: BattlegroundTargets
+## Notes: Shows all battleground enemies. Simple 'Enemy Unit Frame' for battlegrounds.
+## Notes-zhCN: 显示全部战场敌人。战场简洁敌对单位框体。
+## Notes-zhTW: 顯示全部戰場敵人。戰場簡潔敵對單位框體。
+## Version: 40300-12
+## SavedVariables: BattlegroundTargets_Options, BattlegroundTargets_HealersDB 
+## SavedVariablesPerCharacter: BattlegroundTargets_Character
+## X-Curse-Packaged-Version: 40300-12
+## X-Curse-Project-Name: BattlegroundTargets
+## X-Curse-Project-ID: battlegroundtargets
+## X-Curse-Repository-ID: wow/battlegroundtargets/mainline
+## X-CrossFrac-Version-Authors: Nobrainx. Tests and feedback: Jud. (You can find us on forum.wowcircle.net)
+## X-BGH-Integration: BGH support for improved healer detection, by Khal.
+
+Locales\BattlegroundTargets-localized-bgnames.lua
+Locales\BattlegroundTargets-localized-flag.lua
+Locales\BattlegroundTargets-localized-racenames.lua
+
+Locales\BattlegroundTargets-localization-enUS.lua
+Locales\BattlegroundTargets-localization-deDE.lua
+Locales\BattlegroundTargets-localization-esES.lua
+Locales\BattlegroundTargets-localization-esMX.lua
+Locales\BattlegroundTargets-localization-frFR.lua
+Locales\BattlegroundTargets-localization-koKR.lua
+Locales\BattlegroundTargets-localization-ptBR.lua
+Locales\BattlegroundTargets-localization-ruRU.lua
+Locales\BattlegroundTargets-localization-zhCN.lua
+Locales\BattlegroundTargets-localization-zhTW.lua
+
+DBUtils.lua
+BattlegroundTargets.lua
