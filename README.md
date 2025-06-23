@@ -9,7 +9,7 @@ This a modified version of Nobrainx's extended backport for WotLK.
 - Flag Carrier Tracking System for Warsong Gulch and Eye of the Storm.
 - Support for Cross-Faction Battlegrounds and Mercenary Mode.
 - Integrated Healer Detection System, including a persistent database.
-- Incorporates BattleGroundHealers’ combatlog-based method for improved detection
+- Incorporates [BattleGroundHealers](https://github.com/KhalGH/BattleGroundHealers-WotLK)’ combatlog-based method for improved detection
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/KhalGH/BattlegroundTargets-WotLK/refs/heads/assets/assets/BGT_img.png" 
