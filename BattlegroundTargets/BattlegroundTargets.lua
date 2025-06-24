@@ -6000,7 +6000,7 @@ function BattlegroundTargets:IsBattleground()
 end
 
 function BattlegroundTargets:IsNotBattleground()
-	if(not inBattleground and not reCheckBG) then return; end
+	if not (inBattleground or reCheckBG or BattlegroundTargets_Character.TempFaction) then return end
 	
 	inBattleground      = false;
 	reSizeCheck         = 0;
