@@ -6564,7 +6564,7 @@ function BattlegroundTargets:FlagCheck(message, messageFaction)
 	end
 end
 
-local function CombatLogRangeCheck(hideCaster, sourceName, destName, spellId)
+local function CombatLogRangeCheck(sourceName, destName, spellId)
 	if not SPELL_Range[spellId] then
 		local name, _, _, _, _, _, _, _, maxRange = GetSpellInfo(spellId) -- local name, rank, icon, cost, isFunnel, powerType, castTime, minRange, maxRange = GetSpellInfo(spellId)
 		if not maxRange then return end
@@ -6820,7 +6820,7 @@ local function OnEvent(self, event, ...)
 		if(isConfig) then return; end
 		if(isDeadUpdateStop) then return; end
 
-		local _, event, hideCaster, _, sourceName, _, _, _, destName, _, _, spellId, spellName = ... -- timestamp, event, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellId, spellName, spellSchool = ...
+		local _, _, _, sourceName, _, _, destName, _, spellId = ... --timestamp, subevent, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, spellID, spellName, spellSchool, = ...
 		if not sourceName then return end
 		if not destName then return end
 		if not spellId then return end
@@ -6837,7 +6837,7 @@ local function OnEvent(self, event, ...)
 		end
 		
 		
-		CombatLogRangeCheck(hideCaster, sourceName, destName, spellId);
+		CombatLogRangeCheck(sourceName, destName, spellId);
 	elseif(event == "UNIT_HEALTH_FREQUENT") then
 		if(isDeadUpdateStop) then return; end
 		local arg1 = ...;
