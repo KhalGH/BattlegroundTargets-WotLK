@@ -693,9 +693,8 @@ local function RoleLayoutPosPullDownFunc(value)
 	BattlegroundTargets:EnableConfigMode();
 end
 
-
 local function Range_Display(state, GVAR_TargetButton, display, healerState)
-	if(state) then
+	if(state or OPT.ButtonRangeCheck[currentSize] == false) then
 		GVAR_TargetButton.Background:SetAlpha(1);
 		GVAR_TargetButton.TargetCountBackground:SetAlpha(1);
 		GVAR_TargetButton.ClassColorBackground:SetAlpha(1);
