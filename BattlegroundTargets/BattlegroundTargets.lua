@@ -285,7 +285,6 @@ local healthBarWidth = 0.01;
 local sizeOffset    = 5;
 local sizeBarHeight = 14;
 
-
 local fontPath = _G["GameFontNormal"]:GetFont();
 
 local currentSize = 10;
@@ -305,13 +304,11 @@ local bgSizeINT = {
 };
 
 ------------------------------------------------------------
---
 -- Spec-specific buffs
 -- ID's of BUFFS were taken from the next resources:										
 -- https://wowroad.info/?spell=47753
 -- https://wotlk.evowow.com/?spells=7
 -- http://www.wow-game.ru/Wotlktalents335a.htm?lan=ru&class=druid
---
 -----------------------------------------------------------
 local HEALER_SpellBase = {
 	["Healers"] = {
@@ -578,7 +575,6 @@ playerUnitID["pettarget"] = 1;
 playerUnitID["focus"]     = 1;
 playerUnitID["mouseover"] = 1;
 
-
 local startMapCoordsA = {
 	["Alterac Valley"]       = { 417, 424, -56,  -26  },
 	["Arathi Basin"]         = { 230, 258, -105, -78  },
@@ -609,18 +605,15 @@ function GetRealCoords(rawX, rawY)
 	return realX, realY;
 end
 
-
 local function inRange(val, min, max)
     if not min or not max then return nil end;
     if min <= val and val <= max then return true;
     else return false end;
 end
 
-
 local function isStartPosition(rx, ry, mapName)
     local cords = startMapCoordsA[mapName];
     local tx, ty;
-
     for i=1, #cords, 2 do
         if i == 1 then tx = inRange(rx, cords[i], cords[i+1]);
 		else ty = inRange(ry, cords[i], cords[i+1]); end
@@ -628,15 +621,11 @@ local function isStartPosition(rx, ry, mapName)
     if tx and ty then return true end
 end
 
-
-
 local function ClassHexColor(class)
 	local hex;
-	
 	if(classcolors[class]) then
 		hex = string_format("%.2x%.2x%.2x", classcolors[class].r*255, classcolors[class].g*255, classcolors[class].b*255);
 	end
-	
 	return hex or "cccccc";
 end
 
@@ -644,7 +633,6 @@ local function NOOP() end
 
 local function Desaturation(texture, desaturation)
 	local shaderSupported = texture:SetDesaturated(desaturation);
-	
 	if(not shaderSupported) then
 		if(desaturation) then
 			texture:SetVertexColor(0.5, 0.5, 0.5);
@@ -694,153 +682,153 @@ local function RoleLayoutPosPullDownFunc(value)
 end
 
 local function Range_Display(state, GVAR_TargetButton, display, healerState)
-	if(state or OPT.ButtonRangeCheck[currentSize] == false) then
-		GVAR_TargetButton.Background:SetAlpha(1);
-		GVAR_TargetButton.TargetCountBackground:SetAlpha(1);
-		GVAR_TargetButton.ClassColorBackground:SetAlpha(1);
-		GVAR_TargetButton.RangeTexture:SetAlpha(1);
-		GVAR_TargetButton.HealthBar:SetAlpha(1);
-		GVAR_TargetButton.ClassTexture:SetAlpha(1);
-		GVAR_TargetButton.ClassColorBackground:SetTexture(GVAR_TargetButton.colR5, GVAR_TargetButton.colG5, GVAR_TargetButton.colB5, 1);
-		GVAR_TargetButton.HealthBar:SetTexture(GVAR_TargetButton.colR, GVAR_TargetButton.colG, GVAR_TargetButton.colB, 1);
-		if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(1) end;
+	if state or OPT.ButtonRangeCheck[currentSize] == false then
+		GVAR_TargetButton.Background:SetAlpha(1)
+		GVAR_TargetButton.TargetCountBackground:SetAlpha(1)
+		GVAR_TargetButton.ClassColorBackground:SetAlpha(1)
+		GVAR_TargetButton.RangeTexture:SetAlpha(1)
+		GVAR_TargetButton.HealthBar:SetAlpha(1)
+		GVAR_TargetButton.ClassTexture:SetAlpha(1)
+		GVAR_TargetButton.ClassColorBackground:SetTexture(GVAR_TargetButton.colR5, GVAR_TargetButton.colG5, GVAR_TargetButton.colB5, 1)
+		GVAR_TargetButton.HealthBar:SetTexture(GVAR_TargetButton.colR, GVAR_TargetButton.colG, GVAR_TargetButton.colB, 1)
+		if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(1) end
 	else
-		if(display == 1) then -- Default 100
-			GVAR_TargetButton.Background:SetAlpha(1);
-			GVAR_TargetButton.TargetCountBackground:SetAlpha(1);
-			GVAR_TargetButton.ClassColorBackground:SetAlpha(1);
-			GVAR_TargetButton.RangeTexture:SetAlpha(0);
-			GVAR_TargetButton.HealthBar:SetAlpha(1);
-			GVAR_TargetButton.ClassTexture:SetAlpha(1);
-			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(1) end;
- 		elseif(display == 2) then -- Default 100 m
-			GVAR_TargetButton.Background:SetAlpha(1);
-			GVAR_TargetButton.TargetCountBackground:SetAlpha(1);
-			GVAR_TargetButton.ClassColorBackground:SetAlpha(1);
-			GVAR_TargetButton.RangeTexture:SetAlpha(0);
-			GVAR_TargetButton.HealthBar:SetAlpha(1);
-			GVAR_TargetButton.ClassTexture:SetAlpha(1);
-			GVAR_TargetButton.ClassColorBackground:SetTexture(0.2, 0.2, 0.2, 1);
-			GVAR_TargetButton.HealthBar:SetTexture(0.4, 0.4, 0.4, 1);
-			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(1) end;
-		elseif(display == 3) then -- Default 50
-			GVAR_TargetButton.Background:SetAlpha(0.5);
-			GVAR_TargetButton.TargetCountBackground:SetAlpha(0.5);
-			GVAR_TargetButton.ClassColorBackground:SetAlpha(0.5);
-			GVAR_TargetButton.RangeTexture:SetAlpha(0);
-			GVAR_TargetButton.HealthBar:SetAlpha(0.5);
-			GVAR_TargetButton.ClassTexture:SetAlpha(0.5);
-			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(0.5) end; 	
- 		elseif(display == 4) then -- Default 50 m
-			GVAR_TargetButton.Background:SetAlpha(0.5);
-			GVAR_TargetButton.TargetCountBackground:SetAlpha(0.5);
-			GVAR_TargetButton.ClassColorBackground:SetAlpha(0.5);
-			GVAR_TargetButton.RangeTexture:SetAlpha(0);
-			GVAR_TargetButton.HealthBar:SetAlpha(0.5);
-			GVAR_TargetButton.ClassTexture:SetAlpha(0.5);
-			GVAR_TargetButton.ClassColorBackground:SetTexture(0.2, 0.2, 0.2, 1);
-			GVAR_TargetButton.HealthBar:SetTexture(0.4, 0.4, 0.4, 1);
-			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(0.5) end;
-		elseif(display == 5) then -- Default 25
-			GVAR_TargetButton.Background:SetAlpha(0.25);
-			GVAR_TargetButton.TargetCountBackground:SetAlpha(0.25);
-			GVAR_TargetButton.ClassColorBackground:SetAlpha(0.25);
-			GVAR_TargetButton.RangeTexture:SetAlpha(0);
-			GVAR_TargetButton.HealthBar:SetAlpha(0.25);
-			GVAR_TargetButton.ClassTexture:SetAlpha(0.25);
-			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(0.25) end; 	
- 		elseif(display == 6) then -- Default 25 m
-			GVAR_TargetButton.Background:SetAlpha(0.25);
-			GVAR_TargetButton.TargetCountBackground:SetAlpha(0.25);
-			GVAR_TargetButton.ClassColorBackground:SetAlpha(0.25);
-			GVAR_TargetButton.RangeTexture:SetAlpha(0);
-			GVAR_TargetButton.HealthBar:SetAlpha(0.25);
-			GVAR_TargetButton.ClassTexture:SetAlpha(0.25);
-			GVAR_TargetButton.ClassColorBackground:SetTexture(0.2, 0.2, 0.2, 1);
-			GVAR_TargetButton.HealthBar:SetTexture(0.4, 0.4, 0.4, 1);
-			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(0.25) end;
-		elseif(display == 7) then -- Default 10
-			GVAR_TargetButton.Background:SetAlpha(0.1);
-			GVAR_TargetButton.TargetCountBackground:SetAlpha(0.1);
-			GVAR_TargetButton.ClassColorBackground:SetAlpha(0.1);
-			GVAR_TargetButton.RangeTexture:SetAlpha(0);
-			GVAR_TargetButton.HealthBar:SetAlpha(0.1);
-			GVAR_TargetButton.ClassTexture:SetAlpha(0.1);
-			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(0.1) end; 
-		elseif(display == 8) then -- Default 10 m
-			GVAR_TargetButton.Background:SetAlpha(0.1);
-			GVAR_TargetButton.TargetCountBackground:SetAlpha(0.1);
-			GVAR_TargetButton.ClassColorBackground:SetAlpha(0.1);
-			GVAR_TargetButton.RangeTexture:SetAlpha(0);
-			GVAR_TargetButton.HealthBar:SetAlpha(0.1);
-			GVAR_TargetButton.ClassTexture:SetAlpha(0.1);
-			GVAR_TargetButton.ClassColorBackground:SetTexture(0.2, 0.2, 0.2, 1);
-			GVAR_TargetButton.HealthBar:SetTexture(0.4, 0.4, 0.4, 1);
-			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(0.1) end; 
- 		elseif(display == 9) then -- X 100 m
-			GVAR_TargetButton.Background:SetAlpha(1);
-			GVAR_TargetButton.TargetCountBackground:SetAlpha(1);
-			GVAR_TargetButton.ClassColorBackground:SetAlpha(1);
-			GVAR_TargetButton.RangeTexture:SetAlpha(0);
-			GVAR_TargetButton.HealthBar:SetAlpha(1);
-			GVAR_TargetButton.ClassTexture:SetAlpha(1);
-			GVAR_TargetButton.ClassColorBackground:SetTexture(0.2, 0.2, 0.2, 1);
-			GVAR_TargetButton.HealthBar:SetTexture(0.4, 0.4, 0.4, 1);
-			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(1) end;
-		elseif(display == 10) then -- X 50
-			GVAR_TargetButton.Background:SetAlpha(0.5);
-			GVAR_TargetButton.TargetCountBackground:SetAlpha(0.5);
-			GVAR_TargetButton.ClassColorBackground:SetAlpha(0.5);
-			GVAR_TargetButton.RangeTexture:SetAlpha(0);
-			GVAR_TargetButton.HealthBar:SetAlpha(0.5);
-			GVAR_TargetButton.ClassTexture:SetAlpha(0.5);
-			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(0.5) end; 
- 		elseif(display == 11) then -- X 50 m
-			GVAR_TargetButton.Background:SetAlpha(0.5);
-			GVAR_TargetButton.TargetCountBackground:SetAlpha(0.5);
-			GVAR_TargetButton.ClassColorBackground:SetAlpha(0.5);
-			GVAR_TargetButton.RangeTexture:SetAlpha(0);
-			GVAR_TargetButton.HealthBar:SetAlpha(0.5);
-			GVAR_TargetButton.ClassTexture:SetAlpha(0.5);
-			GVAR_TargetButton.ClassColorBackground:SetTexture(0.2, 0.2, 0.2, 1);
-			GVAR_TargetButton.HealthBar:SetTexture(0.4, 0.4, 0.4, 1);
-			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(0.5) end;
-		elseif(display == 12) then -- X 25
-			GVAR_TargetButton.Background:SetAlpha(0.25);
-			GVAR_TargetButton.TargetCountBackground:SetAlpha(0.25);
-			GVAR_TargetButton.ClassColorBackground:SetAlpha(0.25);
-			GVAR_TargetButton.RangeTexture:SetAlpha(0);
-			GVAR_TargetButton.HealthBar:SetAlpha(0.25);
-			GVAR_TargetButton.ClassTexture:SetAlpha(0.25);
-			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(0.25) end; 
- 		elseif(display == 13) then -- X 25 m
-			GVAR_TargetButton.Background:SetAlpha(0.25);
-			GVAR_TargetButton.TargetCountBackground:SetAlpha(0.25);
-			GVAR_TargetButton.ClassColorBackground:SetAlpha(0.25);
-			GVAR_TargetButton.RangeTexture:SetAlpha(0);
-			GVAR_TargetButton.HealthBar:SetAlpha(0.25);
-			GVAR_TargetButton.ClassTexture:SetAlpha(0.25);
-			GVAR_TargetButton.ClassColorBackground:SetTexture(0.2, 0.2, 0.2, 1);
-			GVAR_TargetButton.HealthBar:SetTexture(0.4, 0.4, 0.4, 1);
-			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(0.25) end; 
-		elseif(display == 14) then -- X 10
-			GVAR_TargetButton.Background:SetAlpha(0.10);
-			GVAR_TargetButton.TargetCountBackground:SetAlpha(0.10);
-			GVAR_TargetButton.ClassColorBackground:SetAlpha(0.10);
-			GVAR_TargetButton.RangeTexture:SetAlpha(0);
-			GVAR_TargetButton.HealthBar:SetAlpha(0.10);
-			GVAR_TargetButton.ClassTexture:SetAlpha(0.10);
-			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(0.10) end; 
+		if display == 1 then -- Default 100
+			GVAR_TargetButton.Background:SetAlpha(1)
+			GVAR_TargetButton.TargetCountBackground:SetAlpha(1)
+			GVAR_TargetButton.ClassColorBackground:SetAlpha(1)
+			GVAR_TargetButton.RangeTexture:SetAlpha(0)
+			GVAR_TargetButton.HealthBar:SetAlpha(1)
+			GVAR_TargetButton.ClassTexture:SetAlpha(1)
+			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(1) end
+ 		elseif display == 2 then -- Default 100 m
+			GVAR_TargetButton.Background:SetAlpha(1)
+			GVAR_TargetButton.TargetCountBackground:SetAlpha(1)
+			GVAR_TargetButton.ClassColorBackground:SetAlpha(1)
+			GVAR_TargetButton.RangeTexture:SetAlpha(0)
+			GVAR_TargetButton.HealthBar:SetAlpha(1)
+			GVAR_TargetButton.ClassTexture:SetAlpha(1)
+			GVAR_TargetButton.ClassColorBackground:SetTexture(0.2, 0.2, 0.2, 1)
+			GVAR_TargetButton.HealthBar:SetTexture(0.4, 0.4, 0.4, 1)
+			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(1) end
+		elseif display == 3 then -- Default 50
+			GVAR_TargetButton.Background:SetAlpha(0.50)
+			GVAR_TargetButton.TargetCountBackground:SetAlpha(0.50)
+			GVAR_TargetButton.ClassColorBackground:SetAlpha(0.50)
+			GVAR_TargetButton.RangeTexture:SetAlpha(0)
+			GVAR_TargetButton.HealthBar:SetAlpha(0.50)
+			GVAR_TargetButton.ClassTexture:SetAlpha(0.50)
+			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(0.50) end
+ 		elseif display == 4 then -- Default 50 m
+			GVAR_TargetButton.Background:SetAlpha(0.50)
+			GVAR_TargetButton.TargetCountBackground:SetAlpha(0.50)
+			GVAR_TargetButton.ClassColorBackground:SetAlpha(0.50)
+			GVAR_TargetButton.RangeTexture:SetAlpha(0)
+			GVAR_TargetButton.HealthBar:SetAlpha(0.50)
+			GVAR_TargetButton.ClassTexture:SetAlpha(0.50)
+			GVAR_TargetButton.ClassColorBackground:SetTexture(0.2, 0.2, 0.2, 1)
+			GVAR_TargetButton.HealthBar:SetTexture(0.4, 0.4, 0.4, 1)
+			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(0.50) end
+		elseif display == 5 then -- Default 25
+			GVAR_TargetButton.Background:SetAlpha(0.25)
+			GVAR_TargetButton.TargetCountBackground:SetAlpha(0.25)
+			GVAR_TargetButton.ClassColorBackground:SetAlpha(0.25)
+			GVAR_TargetButton.RangeTexture:SetAlpha(0)
+			GVAR_TargetButton.HealthBar:SetAlpha(0.25)
+			GVAR_TargetButton.ClassTexture:SetAlpha(0.25)
+			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(0.25) end
+ 		elseif display == 6 then -- Default 25 m
+			GVAR_TargetButton.Background:SetAlpha(0.25)
+			GVAR_TargetButton.TargetCountBackground:SetAlpha(0.25)
+			GVAR_TargetButton.ClassColorBackground:SetAlpha(0.25)
+			GVAR_TargetButton.RangeTexture:SetAlpha(0)
+			GVAR_TargetButton.HealthBar:SetAlpha(0.25)
+			GVAR_TargetButton.ClassTexture:SetAlpha(0.25)
+			GVAR_TargetButton.ClassColorBackground:SetTexture(0.2, 0.2, 0.2, 1)
+			GVAR_TargetButton.HealthBar:SetTexture(0.4, 0.4, 0.4, 1)
+			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(0.25) end
+		elseif display == 7 then -- Default 10
+			GVAR_TargetButton.Background:SetAlpha(0.10)
+			GVAR_TargetButton.TargetCountBackground:SetAlpha(0.10)
+			GVAR_TargetButton.ClassColorBackground:SetAlpha(0.10)
+			GVAR_TargetButton.RangeTexture:SetAlpha(0)
+			GVAR_TargetButton.HealthBar:SetAlpha(0.10)
+			GVAR_TargetButton.ClassTexture:SetAlpha(0.10)
+			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(0.10) end
+		elseif display == 8 then -- Default 10 m
+			GVAR_TargetButton.Background:SetAlpha(0.10)
+			GVAR_TargetButton.TargetCountBackground:SetAlpha(0.10)
+			GVAR_TargetButton.ClassColorBackground:SetAlpha(0.10)
+			GVAR_TargetButton.RangeTexture:SetAlpha(0)
+			GVAR_TargetButton.HealthBar:SetAlpha(0.10)
+			GVAR_TargetButton.ClassTexture:SetAlpha(0.10)
+			GVAR_TargetButton.ClassColorBackground:SetTexture(0.2, 0.2, 0.2, 1)
+			GVAR_TargetButton.HealthBar:SetTexture(0.4, 0.4, 0.4, 1)
+			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(0.10) end
+ 		elseif display == 9 then -- X 100 m
+			GVAR_TargetButton.Background:SetAlpha(1)
+			GVAR_TargetButton.TargetCountBackground:SetAlpha(1)
+			GVAR_TargetButton.ClassColorBackground:SetAlpha(1)
+			GVAR_TargetButton.RangeTexture:SetAlpha(0)
+			GVAR_TargetButton.HealthBar:SetAlpha(1)
+			GVAR_TargetButton.ClassTexture:SetAlpha(1)
+			GVAR_TargetButton.ClassColorBackground:SetTexture(0.2, 0.2, 0.2, 1)
+			GVAR_TargetButton.HealthBar:SetTexture(0.4, 0.4, 0.4, 1)
+			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(1) end
+		elseif display == 10 then -- X 50
+			GVAR_TargetButton.Background:SetAlpha(0.50)
+			GVAR_TargetButton.TargetCountBackground:SetAlpha(0.50)
+			GVAR_TargetButton.ClassColorBackground:SetAlpha(0.50)
+			GVAR_TargetButton.RangeTexture:SetAlpha(0)
+			GVAR_TargetButton.HealthBar:SetAlpha(0.50)
+			GVAR_TargetButton.ClassTexture:SetAlpha(0.50)
+			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(0.50) end
+ 		elseif display == 11 then -- X 50 m
+			GVAR_TargetButton.Background:SetAlpha(0.50)
+			GVAR_TargetButton.TargetCountBackground:SetAlpha(0.50)
+			GVAR_TargetButton.ClassColorBackground:SetAlpha(0.50)
+			GVAR_TargetButton.RangeTexture:SetAlpha(0)
+			GVAR_TargetButton.HealthBar:SetAlpha(0.50)
+			GVAR_TargetButton.ClassTexture:SetAlpha(0.50)
+			GVAR_TargetButton.ClassColorBackground:SetTexture(0.2, 0.2, 0.2, 1)
+			GVAR_TargetButton.HealthBar:SetTexture(0.4, 0.4, 0.4, 1)
+			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(0.50) end
+		elseif display == 12 then -- X 25
+			GVAR_TargetButton.Background:SetAlpha(0.25)
+			GVAR_TargetButton.TargetCountBackground:SetAlpha(0.25)
+			GVAR_TargetButton.ClassColorBackground:SetAlpha(0.25)
+			GVAR_TargetButton.RangeTexture:SetAlpha(0)
+			GVAR_TargetButton.HealthBar:SetAlpha(0.25)
+			GVAR_TargetButton.ClassTexture:SetAlpha(0.25)
+			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(0.25) end
+ 		elseif display == 13 then -- X 25 m
+			GVAR_TargetButton.Background:SetAlpha(0.25)
+			GVAR_TargetButton.TargetCountBackground:SetAlpha(0.25)
+			GVAR_TargetButton.ClassColorBackground:SetAlpha(0.25)
+			GVAR_TargetButton.RangeTexture:SetAlpha(0)
+			GVAR_TargetButton.HealthBar:SetAlpha(0.25)
+			GVAR_TargetButton.ClassTexture:SetAlpha(0.25)
+			GVAR_TargetButton.ClassColorBackground:SetTexture(0.2, 0.2, 0.2, 1)
+			GVAR_TargetButton.HealthBar:SetTexture(0.4, 0.4, 0.4, 1)
+			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(0.25) end
+		elseif display == 14 then -- X 10
+			GVAR_TargetButton.Background:SetAlpha(0.10)
+			GVAR_TargetButton.TargetCountBackground:SetAlpha(0.10)
+			GVAR_TargetButton.ClassColorBackground:SetAlpha(0.10)
+			GVAR_TargetButton.RangeTexture:SetAlpha(0)
+			GVAR_TargetButton.HealthBar:SetAlpha(0.10)
+			GVAR_TargetButton.ClassTexture:SetAlpha(0.10)
+			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(0.10) end;
 		else -- X 10 m
-			GVAR_TargetButton.Background:SetAlpha(0.10);
-			GVAR_TargetButton.TargetCountBackground:SetAlpha(0.10);
-			GVAR_TargetButton.ClassColorBackground:SetAlpha(0.10);
-			GVAR_TargetButton.RangeTexture:SetAlpha(0);
-			GVAR_TargetButton.HealthBar:SetAlpha(0.10);
-			GVAR_TargetButton.ClassTexture:SetAlpha(0.10);
-			GVAR_TargetButton.ClassColorBackground:SetTexture(0.2, 0.2, 0.2, 1);
-			GVAR_TargetButton.HealthBar:SetTexture(0.4, 0.4, 0.4, 1);
-			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(0.10) end; 
+			GVAR_TargetButton.Background:SetAlpha(0.10)
+			GVAR_TargetButton.TargetCountBackground:SetAlpha(0.10)
+			GVAR_TargetButton.ClassColorBackground:SetAlpha(0.10)
+			GVAR_TargetButton.RangeTexture:SetAlpha(0)
+			GVAR_TargetButton.HealthBar:SetAlpha(0.10)
+			GVAR_TargetButton.ClassTexture:SetAlpha(0.10)
+			GVAR_TargetButton.ClassColorBackground:SetTexture(0.2, 0.2, 0.2, 1)
+			GVAR_TargetButton.HealthBar:SetTexture(0.4, 0.4, 0.4, 1)
+			if healerState then GVAR_TargetButton.HealersTexture:SetAlpha(0.10) end
 		end
 	end
 end
@@ -865,7 +853,6 @@ end
 
 TEMPLATE.EnableTextButton = function(button, action)
 	local buttoncolor;
-	
 	if(action == 1) then
 		bordercolor = { 0.73, 0.26, 0.21, 1 };
 	elseif(action == 2) then
@@ -877,7 +864,6 @@ TEMPLATE.EnableTextButton = function(button, action)
 	else
 		bordercolor = { 1, 1, 1, 1 };
 	end
-	
 	button.Border:SetTexture(bordercolor[1], bordercolor[2], bordercolor[3], bordercolor[4]);
 	button:Enable();
 end
@@ -885,7 +871,7 @@ end
 TEMPLATE.TextButton = function(button, text, action)
 	local buttoncolor;
 	local bordercolor;
-	
+
 	if(action == 1) then
 		button:SetNormalFontObject("GameFontNormal");
 		button:SetDisabledFontObject("GameFontDisable");
@@ -991,7 +977,6 @@ TEMPLATE.DisableCheckButton = function(button)
 	elseif(button.Icon) then
 		Desaturation(button.Icon, true);
 	end
-	
 	button.Border:SetTexture(0.4, 0.4, 0.4, 1);
 	button:Disable();
 end
@@ -1002,7 +987,6 @@ TEMPLATE.EnableCheckButton = function(button)
 	elseif(button.Icon) then
 		Desaturation(button.Icon, false);
 	end
-	
 	button.Border:SetTexture(0.8, 0.2, 0.2, 1);
 	button:Enable();
 end
@@ -1096,12 +1080,10 @@ TEMPLATE.SetTabButton = function(button, show)
 	if(show) then
 		button.TextureBottom:SetTexture(0, 0, 0, 1);
 		button.TextureBorder:SetTexture(0.8, 0.2, 0.2, 1);
-		
 		button.show = true;
 	else
 		button.TextureBottom:SetTexture(0.8, 0.2, 0.2, 1);
 		button.TextureBorder:SetTexture(0.4, 0.4, 0.4, 0.4);
-		
 		button.show = false;
 	end
 end
@@ -1112,7 +1094,6 @@ TEMPLATE.DisableTabButton = function(button)
 	elseif button.TabTexture then
 		Desaturation(button.TabTexture, true);
 	end
-	
 	button:Disable();
 end
 
@@ -1126,7 +1107,6 @@ TEMPLATE.EnableTabButton = function(button, active)
 	elseif(button.TabTexture) then
 		Desaturation(button.TabTexture, false);
 	end
-	
 	button:Enable();
 end
 
@@ -1389,7 +1369,6 @@ TEMPLATE.PullDownMenu = function(button, contentName, buttonText, pulldownWidth,
 			button.PullDownButtonText:SetText(button.PullDownMenu.Button[i].Text:GetText())
 			button.PullDownMenu:Hide();
 			button.PullDownButtonExpand:SetTexCoord(unpack(Textures.Expand.coords));
-			
 			if(func) then
 				func(button.value1);
 			end
@@ -1422,7 +1401,6 @@ TEMPLATE.PullDownMenu = function(button, contentName, buttonText, pulldownWidth,
 		
 		if(pulldownWidth == 0) then
 			local w = button.PullDownMenu.Button[i].Text:GetStringWidth() + 15 + 18;
-			
 			if(w > autoWidth) then
 				autoWidth = w;
 			end
@@ -1471,7 +1449,6 @@ function BattlegroundTargets:InitOptions()
 
 		local text, id = arg:match("(%w+)%s?(%d*)")
 		local isShowHealersBtn = OPT.ButtonShowHealer[10] or OPT.ButtonShowHealer[15] or OPT.ButtonShowHealer[40];
-		
 
 		if text and isShowHealersBtn then
 			if text == "help" then
@@ -1480,7 +1457,6 @@ function BattlegroundTargets:InitOptions()
 				helpStr = helpStr.."  |cff55c912/bgt hdlogAlways|r -- "..L["To enable permanent healer detection mode while you are in BG. After that, you don't need to enter /bgt hdlog every time"].."\n";
 				helpStr = helpStr.."  |cff55c912/bgt hdreport|r -- "..L["To show full info about all healers detects."].."\n";
 				helpStr = helpStr.."  |cff55c912/bgt dbStoragePeriod <number>|r -- "..L["GET or SET (if the number exists) retention period of the data in months, after which the obsolete data about healer will be deleted. If <number> is set up to 0 then DataBase will be disabled."].."\n";
-				
 				Print(helpStr);
 
 			elseif text == "hdlog" then 
@@ -1494,7 +1470,6 @@ function BattlegroundTargets:InitOptions()
 	
 			elseif text == "hdreport" then
 				local next = next;
-				
 				if inBattleground then
 					if next(ENEMY_Healers) then 
 						BattlegroundTargets:HDreport();
@@ -1504,6 +1479,7 @@ function BattlegroundTargets:InitOptions()
 				else 
 					Print(L["You should be in some battleground to call reports."]) 
 				end
+
 			elseif text == "dbStoragePeriod" then
 				local dbPrefix = "|cffffff7f[DB]|r"
 				id = tonumber(id); 
@@ -1530,6 +1506,7 @@ function BattlegroundTargets:InitOptions()
 						Print("Unknown error!") 
 					end
 				end
+
 			elseif text == "hdlogAlways" then
 				if not BattlegroundTargets_Options.hdlog then
 					BattlegroundTargets_Options.hdlog = true;
@@ -1540,19 +1517,14 @@ function BattlegroundTargets:InitOptions()
 					Print(L["Permanent logging of healers detection is disabled."])
 				end;
 			end
-			
 		elseif text and not isShowHealersBtn then
 			Print(L["[Warning]: To use that command you have to pick 'Show roles' option in the settings panel of BattlegroundTargets."])
 		else
 			BattlegroundTargets:Frame_Toggle(GVAR.OptionsFrame)
 		end;
-
 	end
 	
-	
-
 	-- BattlegroundTargets_getRealms()();
-	
 
 	if(BattlegroundTargets_Options.version == nil) then
 		BattlegroundTargets_Options.version = 14
@@ -2398,17 +2370,13 @@ function BattlegroundTargets:CreateOptionsFrame()
 	GVAR.OptionsFrame.IndependentPos:SetScript("OnClick", function()
 		BattlegroundTargets_Options.IndependentPositioning[currentSize] = not BattlegroundTargets_Options.IndependentPositioning[currentSize];
 		GVAR.OptionsFrame.IndependentPos:SetChecked(BattlegroundTargets_Options.IndependentPositioning[currentSize]);
-		
 		if(not BattlegroundTargets_Options.IndependentPositioning[currentSize]) then
 			BattlegroundTargets_Options.pos["BattlegroundTargets_MainFrame"..currentSize.."_posX"] = nil;
 			BattlegroundTargets_Options.pos["BattlegroundTargets_MainFrame"..currentSize.."_posY"] = nil;
-			
 			if(inCombat or InCombatLockdown()) then
 				reCheckBG = true;
-				
 				return;
 			end
-			
 			BattlegroundTargets:Frame_SetupPosition("BattlegroundTargets_MainFrame");
 		end
 	end);
@@ -2613,8 +2581,6 @@ function BattlegroundTargets:CreateOptionsFrame()
 	GVAR.OptionsFrame.RoleLayoutPosPullDown:SetPoint("LEFT", GVAR.OptionsFrame.ClassIcon, "LEFT", 212, 0);
 	GVAR.OptionsFrame.RoleLayoutPosPullDown:SetHeight(18);
 	TEMPLATE.EnablePullDownMenu(GVAR.OptionsFrame.RoleLayoutPosPullDown);
-
-
 	
 	GVAR.OptionsFrame.ShowTargetCount = CreateFrame("CheckButton", nil, GVAR.OptionsFrame.ConfigBrackets);
 	TEMPLATE.CheckButton(GVAR.OptionsFrame.ShowTargetCount, 16, 4, L["Show Target Count"]);
@@ -2780,7 +2746,6 @@ function BattlegroundTargets:CreateOptionsFrame()
 	GVAR.OptionsFrame.FlagScaleSliderText = GVAR.OptionsFrame.ConfigBrackets:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall");
 	TEMPLATE.Slider(GVAR.OptionsFrame.FlagScaleSlider, 85, 10, 100, 200, OPT.ButtonFlagScale[currentSize]*100, function(self, value)
 		local nvalue = value/100;
-		
 		if(nvalue == BattlegroundTargets_Options.ButtonFlagScale[currentSize]) then return; end
 		BattlegroundTargets_Options.ButtonFlagScale[currentSize] = nvalue;
 		OPT.ButtonFlagScale[currentSize] = nvalue;
@@ -2819,7 +2784,6 @@ function BattlegroundTargets:CreateOptionsFrame()
 	GVAR.OptionsFrame.ShowAssist:SetScript("OnClick", function()
 		BattlegroundTargets_Options.ButtonShowAssist[currentSize] = not BattlegroundTargets_Options.ButtonShowAssist[currentSize];
 		OPT.ButtonShowAssist[currentSize] = not OPT.ButtonShowAssist[currentSize];
-		
 		if(OPT.ButtonShowAssist[currentSize]) then
 			TEMPLATE.EnableSlider(GVAR.OptionsFrame.AssistScaleSlider);
 			TEMPLATE.EnableSlider(GVAR.OptionsFrame.AssistPositionSlider);
@@ -2840,7 +2804,6 @@ function BattlegroundTargets:CreateOptionsFrame()
 	GVAR.OptionsFrame.AssistScaleSliderText = GVAR.OptionsFrame.ConfigBrackets:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall");
 	TEMPLATE.Slider(GVAR.OptionsFrame.AssistScaleSlider, 85, 10, 100, 200, OPT.ButtonAssistScale[currentSize]*100, function(self, value)
 		local nvalue = value/100;
-		
 		if(nvalue == BattlegroundTargets_Options.ButtonAssistScale[currentSize]) then return; end
 		BattlegroundTargets_Options.ButtonAssistScale[currentSize] = nvalue;
 		OPT.ButtonAssistScale[currentSize] = nvalue;
@@ -3063,10 +3026,8 @@ function BattlegroundTargets:CreateOptionsFrame()
 	
 	local infoTxt1 = sortDetail[1]..":\n";
 	table_sort(class_IntegerSort, function(a, b) if(a.loc < b.loc) then return true; end end);
-	
 	for i = 1, #class_IntegerSort do
 		infoTxt1 = infoTxt1.." |cff"..ClassHexColor(class_IntegerSort[i].cid)..class_IntegerSort[i].loc.."|r";
-		
 		if(i <= #class_IntegerSort) then
 			infoTxt1 = infoTxt1.."\n";
 		end
@@ -3074,10 +3035,8 @@ function BattlegroundTargets:CreateOptionsFrame()
 	
 	local infoTxt2 = sortDetail[2]..":\n";
 	table_sort(class_IntegerSort, function(a, b) if(a.eng < b.eng) then return true; end end);
-	
 	for i = 1, #class_IntegerSort do
 		infoTxt2 = infoTxt2.." |cff"..ClassHexColor(class_IntegerSort[i].cid)..class_IntegerSort[i].eng.." ("..class_IntegerSort[i].loc..")|r";
-		
 		if(i <= #class_IntegerSort) then
 			infoTxt2 = infoTxt2.."\n";
 		end
@@ -3085,10 +3044,8 @@ function BattlegroundTargets:CreateOptionsFrame()
 	
 	local infoTxt3 = sortDetail[3]..":\n";
 	table_sort(class_IntegerSort, function(a, b) if(a.blizz < b.blizz) then return true; end end);
-	
 	for i = 1, #class_IntegerSort do
 		infoTxt3 = infoTxt3.." |cff"..ClassHexColor(class_IntegerSort[i].cid)..class_IntegerSort[i].loc.."|r";
-		
 		if(i <= #class_IntegerSort) then
 			infoTxt3 = infoTxt3.."\n";
 		end
@@ -3717,7 +3674,6 @@ function BattlegroundTargets:CheckForEnabledBracket(bracketSize)
 		GVAR.OptionsFrame.SortInfo:Disable() Desaturation(GVAR.OptionsFrame.SortInfo.Texture, true);
 		
 		TEMPLATE.DisablePullDownMenu(GVAR.OptionsFrame.RoleLayoutPosPullDown);
-
 
 		TEMPLATE.DisableSlider(GVAR.OptionsFrame.FontSlider);
 		GVAR.OptionsFrame.FontTitle:SetTextColor(0.5, 0.5, 0.5, 1);
@@ -4728,7 +4684,7 @@ function BattlegroundTargets:ClearConfigButtonValues(GVAR_TargetButton, clearRan
 	GVAR_TargetButton.ClassColorBackground:SetTexture(0, 0, 0, 0);
 	local healerState = OPT.ButtonShowHealer[currentSize] and true;
 
-	if(clearRange) then
+	if clearRange then
 		Range_Display(false, GVAR_TargetButton, OPT.ButtonRangeDisplay[currentSize], healerState);
 	end
 end
@@ -5236,12 +5192,10 @@ end
 	local str, faction = msg, nil;
 	if str:find("Орды!")    or str:find("Horde!")    then faction = 0 end
 	if str:find("Альянса!") or str:find("Alliance!") then faction = 1 end
-
 	if faction then 
 		BattlegroundTargets_Character.TempFaction = faction;
 		BattlegroundTargets:ValidateFactionBG(nil, faction, true)
 	end
-
 end ]]
 
 function BattlegroundTargets:ValidateFactionBG(faction)
@@ -5276,14 +5230,11 @@ function BattlegroundTargets:initHealersTable(name, class)
 		ENEMY_Healers[name].tries    = 0; 
 		ENEMY_Healers[name].DBstatus = 0; 
 	end
-
 end 
-
 
 function BattlegroundTargets:CheckEnemyHealer(name, class, enemyID)
 	if(isConfig) then return; end
 	if (name and contains(HEALER_SpellBase["Healers"], class)) then 
-		
 		BattlegroundTargets:initHealersTable(name, class);
 		local status = ENEMY_Healers[name].status;
 		local reason;
@@ -5292,12 +5243,9 @@ function BattlegroundTargets:CheckEnemyHealer(name, class, enemyID)
 			ENEMY_Healers[name].status = status;
 			ENEMY_Healers[name].reason = reason;
 			ENEMY_Healers[name].tries  = ENEMY_Healers[name].tries + 1;
-		end
-			
+		end	
 		return status;
-	
 	end
-	
 	return nil;
 end
 
@@ -5321,14 +5269,11 @@ function BattlegroundTargets:GetHealerStatusByBuff(enemyID, name, class)
 	local unitStatus = 0;
 	local buffOwnerID, spellID;
 	local reason;
-
-
 	if class == "PALADIN" or class == "DRUID" then
 		local maxpower = UnitPowerMax(enemyID, 0); -- Check Mana.
 		if maxpower and maxpower ~= 0 then
 			local tpl; 
 			local status;
-
 			if class == "PALADIN" then
 				status = tonumber(maxpower) > 16000 and 2 or 1;
 				tpl = status == 1 and coloredLOG.dd or coloredLOG.heal;
@@ -5336,7 +5281,6 @@ function BattlegroundTargets:GetHealerStatusByBuff(enemyID, name, class)
 				status = tonumber(maxpower) < 12000 and 1 or 0;
 				tpl = status == 1 and coloredLOG.dd
 			end
-
 			if status > 0 then
 				HDLog(coloredLOG.log.." "..coloredClass(class).." "..tpl.." detected. "..coloredLOG.reason.." max-mana is "..maxpower, coloredLOG.name, name, coloredLOG.target, enemyID, coloredLOG.tries, ENEMY_Healers[name].tries+1,"\n\n")
 				reason = "Max mana: "..maxpower;
@@ -5346,21 +5290,16 @@ function BattlegroundTargets:GetHealerStatusByBuff(enemyID, name, class)
 			return 0; 
 		end
 	end
-	
 	local buff = UnitBuff(enemyID, i);
 	while buff do
 		buff,_,_,_,_,_,_,buffOwnerID,_,_,spellID = UnitBuff(enemyID, i);
 		for _,val in ipairs(HEALER_SpellBase["HealerBuffs"]) do
-			
 			if (GetSpellInfo(val) == buff) then
 				local owner = buffOwnerID or "-";
 				HDLog(coloredLOG.log.." "..coloredClass(class).." "..coloredLOG.heal.." detected. "..coloredLOG.reason.." "..buff,val.." "..coloredLOG.name, name, coloredLOG.target, enemyID,"|cfff4db49OWNER:|r "..owner, coloredLOG.tries, ENEMY_Healers[name].tries+1,"\n\n")
 				return 2, "buff: "..buff.." spellID: "..val;
-		
 			end
-
 		end
-		
 		for _, val in ipairs(HEALER_SpellBase["DamageBuffs"]) do
 			if (GetSpellInfo(val) == buff) then
 				local owner = buffOwnerID or "-";
@@ -5368,66 +5307,50 @@ function BattlegroundTargets:GetHealerStatusByBuff(enemyID, name, class)
 				return 1, "buff: "..buff.." spellID: "..val;
 			end
 		end
-		
 		i = i + 1;
 	end;
-
 	return unitStatus; 
 end
-
 
 function BattlegroundTargets:GetHealerStatus(name, class) 
 	if(isConfig) then return; end
 	local status = nil;
 	local isHealerClass = contains(HEALER_SpellBase["Healers"], class);
 	local DBisEnable = BattlegroundTargets_Options.DB and BattlegroundTargets_Options.DB.outOfDateRange and BattlegroundTargets_Options.DB.outOfDateRange > 0;
-
 	if name then
-
 		if isHealerClass and 
 		ENEMY_Healers[name].status == 0 and ENEMY_Healers[name].DBstatus == 0 then 
-		
 			local sUnit = {}
 			local isExists = false;
 			sUnit.name  = name;
 			sUnit.class = class;
-
 			if DBisEnable then isExists = BattlegroundTargets_DBUtils:checkHealerDB(BattlegroundTargets_HealersDB, sUnit) end
-			
 			if isExists then
 				ENEMY_Healers[name].status 	 = 3;
 				ENEMY_Healers[name].reason 	 = "Received from the database";
 				ENEMY_Healers[name].tries  	 = ENEMY_Healers[name].tries + 1;
 				ENEMY_Healers[name].class  	 = class;
 				ENEMY_Healers[name].DBstatus = 1;
-
 				HDLog("[DB]: "..coloredClass(class), coloredLOG.heal, name.." was found in DB!")
 			else 
 				ENEMY_Healers[name].DBstatus = -1;
 			end
-
 		elseif not isHealerClass then
 			status = 1;
 		end
-
 	end
 	local rStatus = ENEMY_Healers[name]  and  ENEMY_Healers[name].status  or  status;
-
 	return rStatus;
 end
 
 function BattlegroundTargets:DetectHealerByAOEBuffs(...)
 	if isConfig or not inBattleground then return; end
-	
 	if OPT.ButtonShowHealer[currentSize] then
 		local trackingEvents = {"SPELL_AURA_APPLIED", "SPELL_AURA_REMOVED", "SPELL_AURA_REFRESH"}
 		local _,event,_,ownerName,_,_,targetName,_,spellID,spellName,_,spellType = ...;
-
 		if contains(trackingEvents, event) then
 			if ENEMY_Healers[ownerName] and (ENEMY_Healers[ownerName].status == 0 or ENEMY_Healers[ownerName].status == 3) then
-
 				local successDetect;
-
 				if contains(HEALER_SpellBase["aoeHealerBuffs"], spellID) or 
 				   contains(HEALER_SpellBase["HealerBuffs"], spellID) then
 						ENEMY_Healers[ownerName].status = 2;
@@ -5438,19 +5361,14 @@ function BattlegroundTargets:DetectHealerByAOEBuffs(...)
 						ENEMY_Healers[ownerName].status = 1;
 						successDetect = true;
 				end
-
 				if successDetect then
 					local tpl = ENEMY_Healers[ownerName].status == 1  and  coloredLOG.dd  or  coloredLOG.heal;
-					
 					ENEMY_Healers[ownerName].reason = spellType..": "..spellName.." spellID: "..spellID;
 					ENEMY_Healers[ownerName].tries  = ENEMY_Healers[ownerName].tries  + 1;
-					
 					HDLog("[COMBAT_LOG] "..coloredClass(ENEMY_Healers[ownerName].class).." "..tpl.." detected. "..coloredLOG.reason.." "..spellName,spellID.." "..coloredLOG.name, ownerName, coloredLOG.tries, ENEMY_Healers[ownerName].tries,"\n\n")
 				end
-
 			end
 		end 
-
 	end
 end
 
@@ -5458,14 +5376,11 @@ end
 function BattlegroundTargets:DetectHealerByBGH(name, class)
 	if isConfig or not inBattleground then return end
 	if not name or not class then return end
-
 	BattlegroundTargets:initHealersTable(name, class)
-
 	if ENEMY_Healers[name] and (ENEMY_Healers[name].status == 0 or ENEMY_Healers[name].status == 3) then
 		ENEMY_Healers[name].status = 2
 		ENEMY_Healers[name].reason = "BGH callback"
 		ENEMY_Healers[name].tries  = ENEMY_Healers[name].tries + 1
-
 		HDLog("[BGH] "..coloredClass(class).." "..coloredLOG.heal.." detected. "..coloredLOG.name, name, coloredLOG.reason, ENEMY_Healers[name].reason, coloredLOG.tries, ENEMY_Healers[name].tries, "\n\n")
 	end
 end
@@ -5480,20 +5395,16 @@ end
 -------------------------------------------------------------------------------------------
 
 function BattlegroundTargets:HDreport()
-		
 	local next = next;
 	if next(ENEMY_Healers) then
 		Print("\nHEALER DETECTION. REPORT:")
-		
 		local report   = {};
 		report.healers = {};
 		report.dd      = {};
 		report.unk     = {};
-
 		local report_title_HEALERS = "\n==================\n|cff55c912HEALERS|r DETECTED: \n";
 		local report_title_DD      = "\n==================\n|cffff0000DD|r DETECTED: \n";
 		local report_title_UNKNOWN = "\n==================\n|cff969696UNKNOWN|r ROLE: \n";
-		
 		for name, data in pairs(ENEMY_Healers) do
 			if (type(data) == "table") then
 				local str = "" 
@@ -5501,7 +5412,6 @@ function BattlegroundTargets:HDreport()
 				str  = str.."      CLASS: "..coloredClass(data.class).."\n"
 				str  = str.."      REASON: "..(data.reason or "... no data ...").."\n"
 				str  = str.."      Total attempts to detect: "..data.tries.."\n"
-
 				if data.status >= 2 then report.healers[name] = str;	
 				elseif data.status == 1 then report.dd[name]  = str;
 				elseif data.status == 0 then
@@ -5510,28 +5420,22 @@ function BattlegroundTargets:HDreport()
 				end
 			end
 		end
-
 		for role, tbl in pairs(report) do
-
 			if role == "healers"  and   next(report.healers)  then print(report_title_HEALERS);
 			elseif role == "dd"   and   next(report.dd)       then print(report_title_DD);
 			elseif role == "unk"  and   next(report.unk)      then print(report_title_UNKNOWN); end;
-			
 			for _, str in pairs(tbl) do print(str) end
 		end
 	end
-
-
 end
 ----------------------------------------------------------
 
 function BattlegroundTargets:BattlefieldScoreUpdate()
 	local curTime = GetTime();
-	
 	local diff = curTime - latestScoreUpdate;
 	if(diff < 1) then return end
-
 	local queueStatus, queueMapName, bgName;
+
 	for i=1, MAX_BATTLEFIELD_QUEUES do
 		queueStatus, queueMapName = GetBattlefieldStatus(i);
 		if(queueStatus == "active") then
@@ -5659,43 +5563,32 @@ end
 
 function BattlegroundTargets:CheckFlagCarrierCHECK(unit, targetName)
 	if(not ENEMY_FirstFlagCheck[targetName]) then return; end
-	
 	for i = 1, 40 do
 		local _,_,_,_,_,_,_,_,_,_,spellID = UnitBuff(unit, i);
 		if(not spellID) then break; end
-		
 		if(flagIDs[spellID]) then
 			hasFlag = targetName;
-
 			for j = 1, currentSize do
 				local GVAR_TargetButton = GVAR.TargetButton[j];
 				
 				GVAR_TargetButton.FlagTexture:SetAlpha(0);
 			end
-			
 			local button = ENEMY_Name2Button[targetName];
-			
 			if(button) then
 				local GVAR_TargetButton = GVAR.TargetButton[button];
-				
 				if(GVAR_TargetButton) then
 					GVAR_TargetButton.FlagTexture:SetAlpha(1);
 				end
 			end
-
 			BattlegroundTargets:CheckFlagCarrierEND();
-			
 			return;
 		end
 	end
-	
 	ENEMY_FirstFlagCheck[targetName] = nil;
-	
 	local x = 0;
 	for k in pairs(ENEMY_FirstFlagCheck) do
 		x = x + 1;
 	end
-	
 	if(x == 0) then
 		BattlegroundTargets:CheckFlagCarrierEND();
 	end
@@ -5704,13 +5597,10 @@ end
 function BattlegroundTargets:CheckFlagCarrierSTART()
 	flagCHK = true;
 	flagflag = true;
-
 	table_wipe(ENEMY_FirstFlagCheck);
-	
 	for i = 1, #ENEMY_Data do
 		ENEMY_FirstFlagCheck[ENEMY_Data[i].name] = 1;
 	end
-
 	for num = 1, GetNumRaidMembers() do
 		local unitID = "raid"..num;
 		for i = 1, 40 do
@@ -5719,7 +5609,6 @@ function BattlegroundTargets:CheckFlagCarrierSTART()
 			if flagIDs[spellID] then return end
 		end
 	end
-
 	BattlegroundTargets:RegisterEvent("UNIT_TARGET");
 	BattlegroundTargets:RegisterEvent("UPDATE_MOUSEOVER_UNIT");
 	BattlegroundTargets:RegisterEvent("PLAYER_TARGET_CHANGED");
@@ -5728,9 +5617,7 @@ end
 function BattlegroundTargets:CheckFlagCarrierEND() -- FLAGSPY
 	flagCHK = nil;
 	flagflag = true;
-	
 	wipe(ENEMY_FirstFlagCheck);
-	
 	if not OPT.ButtonShowHealthBar[currentSize] and
 	   not OPT.ButtonShowHealthText[currentSize] and
 	   not OPT.ButtonShowTargetCount[currentSize] and
@@ -5751,7 +5638,6 @@ function BattlegroundTargets:CheckFlagCarrierEND() -- FLAGSPY
 	if not OPT.ButtonShowTarget[currentSize] and
 	   (not OPT.ButtonRangeCheck[currentSize] or OPT.ButtonTypeRangeCheck[currentSize] < 2) and 
 	   not OPT.ButtonShowHealer[currentSize]
-
 	then
 		BattlegroundTargets:UnregisterEvent("PLAYER_TARGET_CHANGED")
 	end
@@ -5759,7 +5645,6 @@ end
 
 function BattlegroundTargets:BattlefieldCheck()
 	if(not inWorld) then return; end
-	
 	local _, instanceType = IsInInstance();
 	if instanceType == "pvp" then
 		BattlegroundTargets:IsBattleground();
@@ -5826,7 +5711,6 @@ function BattlegroundTargets:IsBattleground()
 	if bgName then
 		currentSize = bgSize[ bgName ];
 		reSizeCheck = 10;
-		
 		local flagBGnum = flagBG[ bgName ];
 		if(flagBGnum) then
 			isFlagBG = flagBGnum;
@@ -5836,7 +5720,6 @@ function BattlegroundTargets:IsBattleground()
 		if(BGN[zone]) then
 			currentSize = bgSize[ BGN[zone] ];
 			reSizeCheck = 10;
-			
 			local flagBGnum = flagBG[ BGN[zone] ];
 			if(flagBGnum) then
 				isFlagBG = flagBGnum;
@@ -5845,7 +5728,6 @@ function BattlegroundTargets:IsBattleground()
 			if(reSizeCheck >= 10) then
 				Print("ERROR", "unknown battleground name", locale, queueMapName, zone);
 			end
-			
 			currentSize = 10;
 			reSizeCheck = reSizeCheck + 1;
 		end
@@ -5861,7 +5743,6 @@ function BattlegroundTargets:IsBattleground()
 		reCheckBG = true;
 	else
 		reCheckBG = false;
-		
 		if(BattlegroundTargets_Options.EnableBracket[currentSize]) then
 			GVAR.MainFrame:Show();
 			GVAR.MainFrame:EnableMouse(false);
@@ -5869,7 +5750,6 @@ function BattlegroundTargets:IsBattleground()
 			GVAR.MainFrame.Movetext:Hide();
 			GVAR.TargetButton[1]:SetPoint("TOPLEFT", GVAR.MainFrame, "BOTTOMLEFT", 0, -(20 / OPT.ButtonScale[currentSize]));
 			GVAR.ScoreUpdateTexture:Hide();
-			
 			for i = 1, 40 do
 				local GVAR_TargetButton = GVAR.TargetButton[i]
 				if(i < currentSize + 1) then
@@ -5879,9 +5759,7 @@ function BattlegroundTargets:IsBattleground()
 					GVAR_TargetButton:Hide();
 				end
 			end
-			
 			BattlegroundTargets:SetupButtonLayout();
-
 			if(OPT.ButtonShowFlag[currentSize]) then
 				if bgName == "Warsong Gulch" then
 					local flagIcon;
@@ -5907,7 +5785,6 @@ function BattlegroundTargets:IsBattleground()
 			end
 		else
 			GVAR.MainFrame:Hide();
-			
 			for i = 1, 40 do
 				GVAR.TargetButton[i]:Hide();
 			end
@@ -6044,7 +5921,6 @@ end
 
 function BattlegroundTargets:IsNotBattleground()
 	if not (inBattleground or reCheckBG or BattlegroundTargets_Character.TempFaction) then return end
-	
 	inBattleground      = false;
 	reSizeCheck         = 0;
 	oppositeFactionREAL = nil;
@@ -6059,18 +5935,13 @@ function BattlegroundTargets:IsNotBattleground()
 	reCheckScore        = nil;
 	factionIsValid      = false;
 	icoMinimapFactionBG = nil;
-	
 	BattlegroundTargets_Character.TempFaction = nil;
-	
 	local factionID = BattlegroundTargets:NameFactionToNumber(BattlegroundTargets_Character.NativeFaction);
 	MiniMapBattlefieldIcon:SetTexture(battleFieldIconTextures[factionID])
 	MiniMapBattlefieldFrame:SetNormalTexture(battleFieldIconTextures[factionID])
-
 	if OPT.ButtonShowHealer[10] or OPT.ButtonShowHealer[15] or OPT.ButtonShowHealer[40] then
-
 		if hdlog or BattlegroundTargets_Options.hdlog then BattlegroundTargets:HDreport() end;
 		local DBisEnable = BattlegroundTargets_Options.DB and BattlegroundTargets_Options.DB.outOfDateRange and BattlegroundTargets_Options.DB.outOfDateRange > 0;
-
 		if DBisEnable and next(ENEMY_Healers) then
 			for name, data in pairs(ENEMY_Healers) do
 				if (type(data) == "table") then
@@ -6085,7 +5956,6 @@ function BattlegroundTargets:IsNotBattleground()
 			end
 		end
 	end
-
 
 	BattlegroundTargets:CheckPlayerLevel();
 	
@@ -6122,14 +5992,11 @@ function BattlegroundTargets:IsNotBattleground()
 		reCheckBG = true;
 	else
 		reCheckBG = false;
-		
 		GVAR.MainFrame:Hide();
-		
 		local flagIcon = "Interface\\WorldStateFrame\\AllianceFlag";
 		if(playerFactionDEF == 0) then
 			flagIcon = "Interface\\WorldStateFrame\\HordeFlag";
 		end
-		
 		for i = 1, 40 do
 			local GVAR_TargetButton = GVAR.TargetButton[i];
 			GVAR_TargetButton.FlagTexture:SetTexture(flagIcon);
@@ -6140,12 +6007,10 @@ end
 
 function BattlegroundTargets:CheckPlayerTarget()
 	if(isConfig) then return; end
-
 	targetName, targetRealm = UnitName("target");
 	if targetRealm and targetRealm ~= "" then
 		targetName = targetName.."-"..targetRealm;
 	end
-
 	for i = 1, currentSize do
 		local GVAR_TargetButton = GVAR.TargetButton[i];
 		GVAR_TargetButton.TargetTexture:SetAlpha(0);
@@ -6154,17 +6019,12 @@ function BattlegroundTargets:CheckPlayerTarget()
 		GVAR_TargetButton.HighlightB:SetTexture(0, 0, 0, 1);
 		GVAR_TargetButton.HighlightL:SetTexture(0, 0, 0, 1);
 	end
-	
 	isTarget = 0;
-	
 	if(not targetName) then return; end
 	local targetButton = ENEMY_Name2Button[targetName];
-	
 	if(not targetButton) then return; end
-	
 	local GVAR_TargetButton = GVAR.TargetButton[targetButton];
 	if(not GVAR_TargetButton) then return; end
-	
 	if OPT.ButtonShowTarget[currentSize] then
 		GVAR_TargetButton.TargetTexture:SetAlpha(1);
 		GVAR_TargetButton.HighlightT:SetTexture(0.5, 0.5, 0.5, 1);
@@ -6173,18 +6033,14 @@ function BattlegroundTargets:CheckPlayerTarget()
 		GVAR_TargetButton.HighlightL:SetTexture(0.5, 0.5, 0.5, 1);
 		isTarget = targetButton;
 	end
-
 	if(isDeadUpdateStop) then return; end
-	
 	BattlegroundTargets:CheckUnitTarget("player", targetName);
 end
 
 function BattlegroundTargets:CheckAssist()
 	if(isConfig) then return; end
-	
 	isAssistUnitId = nil;
 	isAssistName = nil;
-	
 	for i = 1, GetNumRaidMembers() do
 		local name, _, _, _, _, _, _, _, _, role = GetRaidRosterInfo(i);
 		if(name and role and role == "MAINASSIST") then
@@ -6194,25 +6050,18 @@ function BattlegroundTargets:CheckAssist()
 			break;
 		end
 	end
-	
 	for i = 1, currentSize do
 		GVAR.TargetButton[i].AssistTexture:SetAlpha(0);
 	end
-	
 	if(not isAssistName) then return; end
-
 	assistTargetName, assistTargetRealm = UnitName(isAssistUnitId);
 	if(assistTargetRealm and assistTargetRealm ~= "") then
 		assistTargetName = assistTargetName.."-"..assistTargetRealm;
 	end
-
 	if(not assistTargetName) then return; end
-	
 	local assistButton = ENEMY_Name2Button[assistTargetName];
 	if(not assistButton) then return; end
-	
 	if(not GVAR.TargetButton[assistButton]) then return; end
-	
 	if(OPT.ButtonShowAssist[currentSize]) then
 		GVAR.TargetButton[assistButton].AssistTexture:SetAlpha(1);
 	end
@@ -6220,38 +6069,28 @@ end
 
 function BattlegroundTargets:CheckPlayerFocus()
 	if(isConfig) then return; end
-
 	focusName, focusRealm = UnitName("focus");
 	if(focusRealm and focusRealm ~= "") then
 		focusName = focusName.."-"..focusRealm;
 	end
-	
 	for i = 1, currentSize do
 		GVAR.TargetButton[i].FocusTexture:SetAlpha(0);
 	end
-
 	if(not focusName) then return; end
-	
 	local focusButton = ENEMY_Name2Button[focusName];
 	if(not focusButton) then return; end
-	
 	local GVAR_TargetButton = GVAR.TargetButton[focusButton];
 	if(not GVAR_TargetButton) then return; end
-	
 	if(OPT.ButtonShowFocus[currentSize]) then
 		GVAR_TargetButton.FocusTexture:SetAlpha(1);
 	end
-	
 	if(rangeSpellName and OPT.ButtonTypeRangeCheck[currentSize] >= 2) then
 		local curTime = GetTime();
 		local Name2Range = ENEMY_Name2Range[focusName];
-		
 		if(Name2Range) then
 			if(Name2Range + range_SPELL_Frequency > curTime) then return; end
 		end
-
 		local healerState = OPT.ButtonShowHealer[currentSize] and true;
-
 		if(IsSpellInRange(rangeSpellName, "focus") == 1) then
 			ENEMY_Name2Range[focusName] = curTime;
 			Range_Display(true, GVAR_TargetButton, OPT.ButtonRangeDisplay[currentSize], healerState);
@@ -6472,7 +6311,6 @@ function BattlegroundTargets:CheckUnitTarget(unitID, unitName)
 		end
 	end
 end
-
 
 function BattlegroundTargets:CheckUnitHealth(unitID, unitName, healthonly)
 	if(isConfig) then return; end
@@ -6738,16 +6576,13 @@ end
 function BattlegroundTargets:UpdateRange(curTime)
 	if(isDeadUpdateStop) then
 		BattlegroundTargets:ClearRangeData();
-		
 		return;
 	end
 	local healerState = OPT.ButtonShowHealer[currentSize] and true;
 	local ButtonRangeDisplay = OPT.ButtonRangeDisplay[currentSize];
-
 	for i = 1, currentSize do
 		Range_Display(false, GVAR.TargetButton[i], ButtonRangeDisplay, healerState);
 	end
-	
 	for name, timeStamp in pairs(ENEMY_Name2Range) do
 		local button = ENEMY_Name2Button[name]
 		if not button then
@@ -6769,7 +6604,6 @@ function BattlegroundTargets:ClearRangeData()
 	if(OPT.ButtonRangeCheck[currentSize]) then
 		table_wipe(ENEMY_Name2Range);
 		local ButtonRangeDisplay = OPT.ButtonRangeDisplay[currentSize];
-		
 		for i = 1, currentSize do
 			Range_Display(false, GVAR.TargetButton[i], ButtonRangeDisplay, OPT.ButtonShowHealer[currentSize]);
 		end
@@ -6802,191 +6636,177 @@ function BattlegroundTargets:CheckNativeFaction()
 end
 
 function BattlegroundTargets:CheckIfPlayerIsGhost()
-	if(not inBattleground) then return; end
-	
+	if(not inBattleground) then return end
 	if UnitIsGhost("player") then
-		isDeadUpdateStop = true;
-		
-		BattlegroundTargets:ClearRangeData();
+		isDeadUpdateStop = true	
+		BattlegroundTargets:ClearRangeData()
 	else
-		isDeadUpdateStop = false;
+		isDeadUpdateStop = false
 	end
 end
 
 function BattlegroundTargets:BattlefieldScoreRequest()
-	local wssf = WorldStateScoreFrame;
-	
+	local wssf = WorldStateScoreFrame
 	if wssf and wssf:IsShown() then
-		return;
+		return
 	end
-	
-	SetBattlefieldScoreFaction();
-	RequestBattlefieldScoreData();
+	SetBattlefieldScoreFaction()
+	RequestBattlefieldScoreData()
 end
 
 local function OnEvent(self, event, ...)
+	if event == "PLAYER_REGEN_DISABLED" then
+		inCombat = true
+		if isConfig then
+			if not inWorld then return end
+			BattlegroundTargets:DisableInsecureConfigWidges()
+		end
 
-	if(event == "PLAYER_REGEN_DISABLED") then
-		inCombat = true;
-		
-		if(isConfig) then
-			if(not inWorld) then return; end
-			
-			BattlegroundTargets:DisableInsecureConfigWidges();
+	elseif event == "PLAYER_REGEN_ENABLED" then
+		inCombat = false
+		if reCheckScore or reCheckBG then
+			if not inWorld then return end
+			BattlegroundTargets:BattlefieldScoreRequest()
 		end
-	elseif(event == "PLAYER_REGEN_ENABLED") then
-		inCombat = false;
-		
-		if(reCheckScore or reCheckBG) then
-			if(not inWorld) then return; end
-			
-			BattlegroundTargets:BattlefieldScoreRequest();
+		if reSetLayout then
+			if not inWorld then return; end
+			BattlegroundTargets:SetupButtonLayout()
 		end
-		
-		if(reSetLayout) then
-			if(not inWorld) then return; end
-			BattlegroundTargets:SetupButtonLayout();
-		end
-		
-		if(isConfig) then
-			if(not inWorld) then return; end
-			
-			BattlegroundTargets:EnableInsecureConfigWidges();
-			
-			if(BattlegroundTargets_Options.EnableBracket[currentSize]) then
-				BattlegroundTargets:EnableConfigMode();
+		if isConfig then
+			if not inWorld then return end
+			BattlegroundTargets:EnableInsecureConfigWidges()
+			if BattlegroundTargets_Options.EnableBracket[currentSize] then
+				BattlegroundTargets:EnableConfigMode()
 			else
-				BattlegroundTargets:DisableConfigMode();
+				BattlegroundTargets:DisableConfigMode()
 			end
 		end
-	elseif(event == "COMBAT_LOG_EVENT_UNFILTERED") then
-		if(isConfig) then return; end
-		if(isDeadUpdateStop) then return; end
-			
-		local _, _, _, sourceName, _, _, destName, _, spellID = ... --timestamp, subevent, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, spellID, spellName, spellSchool, = ...	
-		if not sourceName then return end
-		if not destName then return end
-		if not spellID then return end
-		
-		BattlegroundTargets:DetectHealerByAOEBuffs(...);
-		
-		if sourceName == destName then return end
 
+	elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
+		if isConfig or isDeadUpdateStop then return end
+		--local timestamp, subevent, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, spellID, spellName, spellSchool = ...	
+		local _, _, _, sourceName, _, _, destName, _, spellID = ...
+		if not sourceName or not destName or not spellID then return end
+		BattlegroundTargets:DetectHealerByAOEBuffs(...)
+		if not OPT.ButtonRangeCheck[currentSize] then return end
+		if sourceName == destName then return end
 		range_CL_Throttle = range_CL_Throttle + 1
 		if range_CL_Throttle > range_CL_Frequency then
 			range_CL_Throttle = 0
 			range_CL_Frequency = math_random(1,3)
 			return
 		end
-		
-		CombatLogRangeCheck(sourceName, destName, spellID);
-	elseif(event == "UNIT_HEALTH_FREQUENT") then
-		if(isDeadUpdateStop) then return; end
-		local arg1 = ...;
-		BattlegroundTargets:CheckUnitHealth(arg1);
-	elseif(event == "UNIT_TARGET") then
-		if(isDeadUpdateStop) then return; end
-		local arg1 = ...;
-		if(not raidUnitID[arg1]) then return; end
-		BattlegroundTargets:CheckUnitTarget(arg1);
-	elseif(event == "UPDATE_MOUSEOVER_UNIT") then
-		if(isDeadUpdateStop) then return; end
-		
-		BattlegroundTargets:CheckUnitHealth("mouseover");
-	elseif(event == "PLAYER_TARGET_CHANGED") then
-		BattlegroundTargets:CheckPlayerTarget();
-	elseif(event == "PLAYER_FOCUS_CHANGED") then
-		BattlegroundTargets:CheckPlayerFocus();
+		CombatLogRangeCheck(sourceName, destName, spellID)
+
+	elseif event == "UNIT_HEALTH_FREQUENT" then
+		if isDeadUpdateStop then return end
+		local arg1 = ...
+		BattlegroundTargets:CheckUnitHealth(arg1)
+
+	elseif event == "UNIT_TARGET" then
+		if isDeadUpdateStop then return end
+		local arg1 = ...
+		if not raidUnitID[arg1] then return end
+		BattlegroundTargets:CheckUnitTarget(arg1)
+
+	elseif event == "UPDATE_MOUSEOVER_UNIT" then
+		if isDeadUpdateStop then return end
+		BattlegroundTargets:CheckUnitHealth("mouseover")
+
+	elseif event == "PLAYER_TARGET_CHANGED" then
+		BattlegroundTargets:CheckPlayerTarget()
+
+	elseif event == "PLAYER_FOCUS_CHANGED" then
+		BattlegroundTargets:CheckPlayerFocus()
+
 	elseif event == "UPDATE_BATTLEFIELD_SCORE" then
-		if(isConfig) then return; end
-		
-		BattlegroundTargets:BattlefieldScoreUpdate();
-	elseif(event == "RAID_ROSTER_UPDATE") then
-		if(OPT.ButtonShowAssist[currentSize]) then
-			BattlegroundTargets:CheckAssist();
+		if isConfig then return end
+		BattlegroundTargets:BattlefieldScoreUpdate()
+
+	elseif event == "RAID_ROSTER_UPDATE" then
+		if OPT.ButtonShowAssist[currentSize] then
+			BattlegroundTargets:CheckAssist()
 		end
-	elseif(event == "CHAT_MSG_BG_SYSTEM_HORDE") then
-		local arg1 = ...;
 
-		BattlegroundTargets:FlagCheck(arg1, 0);
-	elseif(event == "CHAT_MSG_BG_SYSTEM_ALLIANCE") then
-		local arg1 = ...;
+	elseif event == "CHAT_MSG_BG_SYSTEM_HORDE" then
+		local arg1 = ...
+		BattlegroundTargets:FlagCheck(arg1, 0)
 
-		BattlegroundTargets:FlagCheck(arg1, 1);
-	--[[ elseif(event == "CHAT_MSG_RAID_BOSS_EMOTE") then
-		local arg1 = ...;
+	elseif event == "CHAT_MSG_BG_SYSTEM_ALLIANCE" then
+		local arg1 = ...
+		BattlegroundTargets:FlagCheck(arg1, 1)
+
+	--[[ elseif event == "CHAT_MSG_RAID_BOSS_EMOTE" then
+		local arg1 = ...
 		if arg1 then
 			BattlegroundTargets:ParseFactionFromMSG(arg1)
-		end	 ]]	
-	elseif(event == "PLAYER_DEAD") then
-		if(not inBattleground) then return; end
-		
-		isDeadUpdateStop = false;
-	elseif(event == "PLAYER_UNGHOST") then
-		if(not inBattleground) then return; end
-		
-		isDeadUpdateStop = false;
-	elseif(event == "PLAYER_ALIVE") then
-		BattlegroundTargets:CheckIfPlayerIsGhost();
-	elseif(event == "ZONE_CHANGED_NEW_AREA") then
-		if(not inWorld) then return; end
-		if(isConfig) then return; end
-		
-		BattlegroundTargets:BattlefieldCheck();
+		end ]]	
 
-	elseif(event == "PLAYER_LEVEL_UP") then
-		local arg1 = ...;
-		if(arg1) then
-			playerLevel = arg1;
-			BattlegroundTargets:CheckPlayerLevel();
+	elseif event == "PLAYER_DEAD" then
+		if not inBattleground then return end
+		isDeadUpdateStop = false
+
+	elseif event == "PLAYER_UNGHOST" then
+		if not inBattleground then return end
+		isDeadUpdateStop = false
+
+	elseif event == "PLAYER_ALIVE" then
+		BattlegroundTargets:CheckIfPlayerIsGhost()
+
+	elseif event == "ZONE_CHANGED_NEW_AREA" then
+		if not inWorld then return end
+		if isConfig then return end
+		BattlegroundTargets:BattlefieldCheck()
+
+	elseif event == "PLAYER_LEVEL_UP" then
+		local arg1 = ...
+		if arg1 then
+			playerLevel = arg1
+			BattlegroundTargets:CheckPlayerLevel()
 		end
-	elseif(event == "PLAYER_LOGIN") then
-		BattlegroundTargets:CheckNativeFaction();
-		BattlegroundTargets:InitOptions();
-		BattlegroundTargets:CreateInterfaceOptions();
-		BattlegroundTargets:LDBcheck();
-		BattlegroundTargets:CreateFrames();
-		BattlegroundTargets:CreateOptionsFrame();
 
+	elseif event == "PLAYER_LOGIN" then
+		BattlegroundTargets:CheckNativeFaction()
+		BattlegroundTargets:InitOptions()
+		BattlegroundTargets:CreateInterfaceOptions()
+		BattlegroundTargets:LDBcheck()
+		BattlegroundTargets:CreateFrames()
+		BattlegroundTargets:CreateOptionsFrame()
 		RegisterBGH_Notifier() -- by Khal
 		if IsShowHealers then
 			if BattlegroundTargets_Options.hdlog then
 				Print(L["Permanent logging of healers detection is enabled. Type |cff55c912/bgt hdlogAlways|r again to disable."])
 			end
 			if BattlegroundTargets_Options.DB and BattlegroundTargets_Options.DB.outOfDateRange and BattlegroundTargets_Options.DB.outOfDateRange > 0 then
-				DBUtils:CheckHealersDataBase(BattlegroundTargets_HealersDB);
+				DBUtils:CheckHealersDataBase(BattlegroundTargets_HealersDB)
 			end
 		end
 		hooksecurefunc("PanelTemplates_SetTab", function(frame)
-			if(frame and frame == WorldStateScoreFrame) then
-				BattlegroundTargets:ScoreWarningCheck();
+			if frame and frame == WorldStateScoreFrame then
+				BattlegroundTargets:ScoreWarningCheck()
 			end
 		end)
-		
-		table.insert(UISpecialFrames, "BattlegroundTargets_OptionsFrame");
-		BattlegroundTargets:UnregisterEvent("PLAYER_LOGIN");
-	elseif(event == "PLAYER_ENTERING_WORLD") then  
-		inWorld = true;
-		
-		BattlegroundTargets:CheckPlayerLevel();
-		BattlegroundTargets:BattlefieldCheck();
-		BattlegroundTargets:CheckIfPlayerIsGhost();
-		BattlegroundTargets:CreateMinimapButton();
-		
-		if(not BattlegroundTargets_Options.FirstRun) then
-			BattlegroundTargets:Frame_Toggle(GVAR.OptionsFrame);
-			
+		table.insert(UISpecialFrames, "BattlegroundTargets_OptionsFrame")
+		BattlegroundTargets:UnregisterEvent("PLAYER_LOGIN")
+
+	elseif event == "PLAYER_ENTERING_WORLD" then 
+		inWorld = true
+		BattlegroundTargets:CheckPlayerLevel()
+		BattlegroundTargets:BattlefieldCheck()
+		BattlegroundTargets:CheckIfPlayerIsGhost()
+		BattlegroundTargets:CreateMinimapButton()
+		if not BattlegroundTargets_Options.FirstRun then
+			BattlegroundTargets:Frame_Toggle(GVAR.OptionsFrame)
 			BattlegroundTargets_Options.FirstRun = true
 		end
-		
 		BattlegroundTargets:UnregisterEvent("PLAYER_ENTERING_WORLD");
 	end
 end
 
-BattlegroundTargets:RegisterEvent("PLAYER_REGEN_DISABLED");
-BattlegroundTargets:RegisterEvent("PLAYER_REGEN_ENABLED");
-BattlegroundTargets:RegisterEvent("ZONE_CHANGED_NEW_AREA");
-BattlegroundTargets:RegisterEvent("PLAYER_LOGIN");
-BattlegroundTargets:RegisterEvent("PLAYER_ENTERING_WORLD");
---BattlegroundTargets:RegisterEvent("CHAT_MSG_RAID_BOSS_EMOTE"); 
-BattlegroundTargets:SetScript("OnEvent", OnEvent);
+BattlegroundTargets:RegisterEvent("PLAYER_REGEN_DISABLED")
+BattlegroundTargets:RegisterEvent("PLAYER_REGEN_ENABLED")
+BattlegroundTargets:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+BattlegroundTargets:RegisterEvent("PLAYER_LOGIN")
+BattlegroundTargets:RegisterEvent("PLAYER_ENTERING_WORLD")
+--BattlegroundTargets:RegisterEvent("CHAT_MSG_RAID_BOSS_EMOTE")
+BattlegroundTargets:SetScript("OnEvent", OnEvent)
