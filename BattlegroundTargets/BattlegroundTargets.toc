@@ -12,7 +12,7 @@
 ## X-Curse-Project-ID: battlegroundtargets
 ## X-Curse-Repository-ID: wow/battlegroundtargets/mainline
 ## X-CrossFrac-Version-Authors: Nobrainx. Tests and feedback: Jud. (You can find us on forum.wowcircle.net)
-## X-BGH-Integration: BGH support for improved healer detection, by Khal.
+## X-Modder: Khal
 
 Locales\BattlegroundTargets-localized-bgnames.lua
 Locales\BattlegroundTargets-localized-flag.lua

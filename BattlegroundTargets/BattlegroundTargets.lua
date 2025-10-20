@@ -287,6 +287,12 @@ local sizeBarHeight = 14;
 
 local fontPath = _G["GameFontNormal"]:GetFont();
 
+local BGStatus = {
+	[1] = true,
+	[2] = true,
+	[3] = true
+}
+
 local currentSize = 10;
 local bgSize = {
 	["Alterac Valley"] = 40,
@@ -5387,7 +5393,7 @@ end
 
 local function RegisterBGH_Notifier()
 	if not BGH_Notifier then return end
-	Print("BGH loaded, detection method added.")
+	--Print("BGH loaded, detection method added.")
 	BGH_Notifier.OnHealerDetected = function(name, class)
 		BattlegroundTargets:DetectHealerByBGH(name, class)
 	end
@@ -6800,6 +6806,17 @@ local function OnEvent(self, event, ...)
 			BattlegroundTargets_Options.FirstRun = true
 		end
 		BattlegroundTargets:UnregisterEvent("PLAYER_ENTERING_WORLD");
+	elseif event == "UPDATE_BATTLEFIELD_STATUS" then -- by Khal
+		local bgIndex = ...
+		local status, mapName = GetBattlefieldStatus(bgIndex)
+		if status == "active" then
+			if not BGStatus[bgIndex] then
+				BattlegroundTargets_Character.TempFaction = nil
+			end
+			BGStatus[bgIndex] = true
+		else
+			BGStatus[bgIndex] = false
+		end
 	end
 end
 
@@ -6808,5 +6825,6 @@ BattlegroundTargets:RegisterEvent("PLAYER_REGEN_ENABLED")
 BattlegroundTargets:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 BattlegroundTargets:RegisterEvent("PLAYER_LOGIN")
 BattlegroundTargets:RegisterEvent("PLAYER_ENTERING_WORLD")
+BattlegroundTargets:RegisterEvent("UPDATE_BATTLEFIELD_STATUS")
 --BattlegroundTargets:RegisterEvent("CHAT_MSG_RAID_BOSS_EMOTE")
 BattlegroundTargets:SetScript("OnEvent", OnEvent)
