@@ -194,7 +194,9 @@ local table_wipe                 = _G.table.wipe;
 local pairs                      = _G.pairs;
 local tonumber                   = _G.tonumber;
 local next 						 = _G.next;
+local select					 = _G.select;
 local GetPlayerMapPosition		 = _G.GetPlayerMapPosition;
+local GetWorldStateUIInfo		 = _G.GetWorldStateUIInfo;
 
 local inWorld;
 local inBattleground;
@@ -287,11 +289,10 @@ local sizeBarHeight = 14;
 
 local fontPath = _G["GameFontNormal"]:GetFont();
 
-local BGStatus = {
-	[1] = true,
-	[2] = true,
-	[3] = true
-}
+local BGStatus = {}
+for i = 1, MAX_BATTLEFIELD_QUEUES do
+	BGStatus[i] = true
+end
 
 local currentSize = 10;
 local bgSize = {
@@ -582,11 +583,12 @@ playerUnitID["focus"]     = 1;
 playerUnitID["mouseover"] = 1;
 
 local startMapCoordsA = {
-	["Alterac Valley"]       = { 417, 424, -56,  -26  },
-	["Arathi Basin"]         = { 230, 258, -105, -78  },
-	["Isle of Conquest"]      = { 300, 419, -429, -385 },
-	["Eye of the Storm"]    = { 360, 375, -144, -125 },
-	["Warsong Gulch"]        = { 370, 402, -85,  -64  },
+	["Alterac Valley"]          = { 417, 424, -56,  -26  },
+	["Arathi Basin"]            = { 230, 258, -105, -78  },
+	["Isle of Conquest"]        = { 300, 419, -429, -385 },
+	["Eye of the Storm"]        = { 360, 375, -144, -125 },
+	["Warsong Gulch"]           = { 370, 402, -85,  -64  },
+	["Strand of the Ancients"]  = { 374, 392, -310, -290 }, -- defending faction start area
 }
 
 local function Print(...)
@@ -617,8 +619,18 @@ local function inRange(val, min, max)
     else return false end;
 end
 
-local function isStartPosition(rx, ry, mapName)
+local function isAllyStartPosition(rx, ry, mapName)
     local cords = startMapCoordsA[mapName];
+    local tx, ty;
+    for i=1, #cords, 2 do
+        if i == 1 then tx = inRange(rx, cords[i], cords[i+1]);
+		else ty = inRange(ry, cords[i], cords[i+1]); end
+    end
+    if tx and ty then return true end
+end
+
+local function isSotaDefenderPosition(rx, ry)
+    local cords = startMapCoordsA["Strand of the Ancients"];
     local tx, ty;
     for i=1, #cords, 2 do
         if i == 1 then tx = inRange(rx, cords[i], cords[i+1]);
@@ -5194,16 +5206,6 @@ function BattlegroundTargets:NameFactionToNumber(faction)
 	elseif (faction == "Alliance") then return 1 end;
 end
 
---[[ function BattlegroundTargets:ParseFactionFromMSG(msg)
-	local str, faction = msg, nil;
-	if str:find("Орды!")    or str:find("Horde!")    then faction = 0 end
-	if str:find("Альянса!") or str:find("Alliance!") then faction = 1 end
-	if faction then 
-		BattlegroundTargets_Character.TempFaction = faction;
-		BattlegroundTargets:ValidateFactionBG(nil, faction, true)
-	end
-end ]]
-
 function BattlegroundTargets:ValidateFactionBG(faction)
 	BattlegroundTargets:CheckNativeFaction();
 	if (faction == oppositeFactionBG) then 
@@ -5221,7 +5223,6 @@ function BattlegroundTargets:ValidateFactionBG(faction)
 	icoMinimapFactionBG = battleFieldIconTextures[playerFactionBG];
 	MiniMapBattlefieldIcon:SetTexture(icoMinimapFactionBG)
 	MiniMapBattlefieldFrame:SetNormalTexture(icoMinimapFactionBG)
-	--BattlegroundTargets:UnregisterEvent("CHAT_MSG_RAID_BOSS_EMOTE");
 
 	factionIsValid = true;
 end
@@ -5437,11 +5438,13 @@ end
 ----------------------------------------------------------
 
 function BattlegroundTargets:BattlefieldScoreUpdate()
+	if not factionIsValid then return end
+
 	local curTime = GetTime();
 	local diff = curTime - latestScoreUpdate;
 	if(diff < 1) then return end
-	local queueStatus, queueMapName, bgName;
 
+	local queueStatus, queueMapName, bgName;
 	for i=1, MAX_BATTLEFIELD_QUEUES do
 		queueStatus, queueMapName = GetBattlefieldStatus(i);
 		if(queueStatus == "active") then
@@ -5450,37 +5453,12 @@ function BattlegroundTargets:BattlefieldScoreUpdate()
 		end
 	end
 
-	--------- Adjustment for Warmane's Mercenary Mode, by Khal ---------
-	if not factionIsValid then
-		for i = 1, GetNumBattlefieldScores() do
-			local iName, _, _, _, _, iFaction = GetBattlefieldScore(i);
-			if playerName == iName then
-				faction = iFaction;
-				break
-			end
-		end
-		if faction then
-			BattlegroundTargets:ValidateFactionBG(faction)
-			if bgName then
-				if faction == 0 then
-					Print(bgName, "- |cffcc1a1aHorde|r ")
-				elseif faction == 1 then
-					Print(bgName, "- |cff3060ffAlliance|r ")
-				end
-			end
-		end
-	end
-
-	if not factionIsValid then return end
-	---------------------------------------------------------------------
-
 	if(inCombat or InCombatLockdown()) then
 		if(curTime - latestScoreWarning) then
 			GVAR.ScoreUpdateTexture:Show();
 		else
 			GVAR.ScoreUpdateTexture:Hide();
 		end
-		
 		reCheckScore = true;
 		return;
 	end
@@ -5678,41 +5656,46 @@ function BattlegroundTargets:IsBattleground()
 	end
 
 	if not BattlegroundTargets_Character.TempFaction then
-		local faction
-		if bgName and bgName ~= "Strand of the Ancients" then 
+		local faction = BattlegroundTargets:NameFactionToNumber(BattlegroundTargets_Character.NativeFaction) or 1
+		if bgName then
+			-- Detects faction from starting coords to support any cross-faction system
 			local rawx, rawy = GetPlayerMapPosition("player");
 			if rawx and rawy then
 				local rx, ry = GetRealCoords(rawx, rawy)
-				if isStartPosition(rx, ry, bgName) then 	
-					faction = 1
-				else 
-					faction = 0
+				if bgName == "Strand of the Ancients" then -- by Khal
+					if select(2, GetWorldStateUIInfo(2)) == 0 then
+						-- Ally Defending SotA
+						if isSotaDefenderPosition(rx, ry) then
+							faction = 1
+						else
+							faction = 0
+						end
+					else
+						-- Ally Attacking SotA
+						if isSotaDefenderPosition(rx, ry) then
+							faction = 0
+						else
+							faction = 1
+						end
+					end
+				else
+					if isAllyStartPosition(rx, ry, bgName) then 	
+						faction = 1
+					else 
+						faction = 0
+					end
 				end
 			end
-		else -- Adjustment for Warmane's Mercenary Mode, by Khal
-			BattlegroundTargets:BattlefieldScoreRequest()
-			for i = 1, GetNumBattlefieldScores() do
-				local iName, _, _, _, _, iFaction = GetBattlefieldScore(i);
-				if playerName == iName then
-					faction = iFaction;
-					break;
-				end
-			end		
-		end
-		if faction then
-			BattlegroundTargets:ValidateFactionBG(faction)
-			if bgName then
-				if faction == 0 then
-					Print(bgName, "- |cffcc1a1aHorde|r ")
-				elseif faction == 1 then
-					Print(bgName, "- |cff3060ffAlliance|r ")
-				end
+			if faction == 0 then
+				Print(bgName, "- |cffcc1a1aHorde|r ")
+			elseif faction == 1 then
+				Print(bgName, "- |cff3060ffAlliance|r ")
 			end
 		end
+		BattlegroundTargets:ValidateFactionBG(faction)
 	else
 		BattlegroundTargets:ValidateFactionBG(BattlegroundTargets_Character.TempFaction);
 	end
-	--------------------------------
 
 	if bgName then
 		currentSize = bgSize[ bgName ];
@@ -5925,9 +5908,7 @@ function BattlegroundTargets:IsBattleground()
 	end
 end
 
-function BattlegroundTargets:IsNotBattleground()
-	if not (inBattleground or reCheckBG or BattlegroundTargets_Character.TempFaction) then return end
-	inBattleground      = false;
+local function ResetBattlegroundFlags()
 	reSizeCheck         = 0;
 	oppositeFactionREAL = nil;
 	isFlagBG            = 0;
@@ -5942,6 +5923,12 @@ function BattlegroundTargets:IsNotBattleground()
 	factionIsValid      = false;
 	icoMinimapFactionBG = nil;
 	BattlegroundTargets_Character.TempFaction = nil;
+end
+
+function BattlegroundTargets:IsNotBattleground()
+	if not (inBattleground or reCheckBG or BattlegroundTargets_Character.TempFaction) then return end
+	inBattleground      = false;
+	ResetBattlegroundFlags()
 	local factionID = BattlegroundTargets:NameFactionToNumber(BattlegroundTargets_Character.NativeFaction);
 	MiniMapBattlefieldIcon:SetTexture(battleFieldIconTextures[factionID])
 	MiniMapBattlefieldFrame:SetNormalTexture(battleFieldIconTextures[factionID])
@@ -6742,12 +6729,6 @@ local function OnEvent(self, event, ...)
 		local arg1 = ...
 		BattlegroundTargets:FlagCheck(arg1, 1)
 
-	--[[ elseif event == "CHAT_MSG_RAID_BOSS_EMOTE" then
-		local arg1 = ...
-		if arg1 then
-			BattlegroundTargets:ParseFactionFromMSG(arg1)
-		end ]]	
-
 	elseif event == "PLAYER_DEAD" then
 		if not inBattleground then return end
 		isDeadUpdateStop = false
@@ -6808,10 +6789,10 @@ local function OnEvent(self, event, ...)
 		BattlegroundTargets:UnregisterEvent("PLAYER_ENTERING_WORLD");
 	elseif event == "UPDATE_BATTLEFIELD_STATUS" then -- by Khal
 		local bgIndex = ...
-		local status, mapName = GetBattlefieldStatus(bgIndex)
+		local status = GetBattlefieldStatus(bgIndex)
 		if status == "active" then
 			if not BGStatus[bgIndex] then
-				BattlegroundTargets_Character.TempFaction = nil
+				ResetBattlegroundFlags()
 			end
 			BGStatus[bgIndex] = true
 		else
@@ -6826,5 +6807,4 @@ BattlegroundTargets:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 BattlegroundTargets:RegisterEvent("PLAYER_LOGIN")
 BattlegroundTargets:RegisterEvent("PLAYER_ENTERING_WORLD")
 BattlegroundTargets:RegisterEvent("UPDATE_BATTLEFIELD_STATUS")
---BattlegroundTargets:RegisterEvent("CHAT_MSG_RAID_BOSS_EMOTE")
 BattlegroundTargets:SetScript("OnEvent", OnEvent)
