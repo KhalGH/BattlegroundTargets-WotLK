@@ -85,17 +85,19 @@ end
 
 function BattlegroundTargets_DBUtils:insertNewUnit(HEALERS_DB, unit)
     unit.name, unit.realm = SplitName(unit.name);
-    -- indexed part
-    local stamp = tonumber(date("%Y%m%d%H%M%S"));
-    table_insert( HEALERS_DB, #HEALERS_DB+1, {stamp, unit["name"], unit["realm"], unit["class"]} );
-  
-    -- hash part
-    local targetTBL = HEALERS_DB[unit["class"]][unit["realm"]];
-    if not targetTBL then
-        HEALERS_DB[unit["class"]][unit["realm"]] = {};
-        targetTBL = HEALERS_DB[unit["class"]][unit["realm"]];
-      end
-    table_insert(targetTBL, #targetTBL+1, unit["name"])
+    if unit.realm then
+        -- indexed part
+        local stamp = tonumber(date("%Y%m%d%H%M%S"));
+        table_insert( HEALERS_DB, #HEALERS_DB+1, {stamp, unit["name"], unit["realm"], unit["class"]} );
+    
+        -- hash part
+        local targetTBL = HEALERS_DB[unit["class"]][unit["realm"]];
+        if not targetTBL then
+            HEALERS_DB[unit["class"]][unit["realm"]] = {};
+            targetTBL = HEALERS_DB[unit["class"]][unit["realm"]];
+        end
+        table_insert(targetTBL, #targetTBL+1, unit["name"])
+    end
 end
 
 -----------------------------------------------------------------------------------------

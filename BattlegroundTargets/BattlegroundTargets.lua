@@ -141,7 +141,7 @@ BattlegroundTargets_Character = {};
 BattlegroundTargets_HealersDB = {};
 
 local BattlegroundTargets = CreateFrame("Frame");
-local MOD_VERSION = "v1.2";
+local MOD_VERSION = "v1.2.1";
 
 local L   = BattlegroundTargets_Localization;
 local BGN = BattlegroundTargets_BGNames;
@@ -5240,20 +5240,22 @@ function BattlegroundTargets:initHealersTable(name, class)
 end 
 
 function BattlegroundTargets:CheckEnemyHealer(name, class, enemyID)
-	if(isConfig) then return; end
-	if (name and contains(HEALER_SpellBase["Healers"], class)) then 
-		BattlegroundTargets:initHealersTable(name, class);
-		local status = ENEMY_Healers[name].status;
-		local reason;
+	if isConfig then return end
+	if name and contains(HEALER_SpellBase["Healers"], class) then 
+		BattlegroundTargets:initHealersTable(name, class)
+		local status = ENEMY_Healers[name].status
+		local reason
 		if status == 0 or status == 3 then
-			status, reason = BattlegroundTargets:GetHealerStatusByBuff(enemyID, name, class);
-			ENEMY_Healers[name].status = status;
-			ENEMY_Healers[name].reason = reason;
-			ENEMY_Healers[name].tries  = ENEMY_Healers[name].tries + 1;
+			status, reason = BattlegroundTargets:GetHealerStatusByBuff(enemyID, name, class, status)
+			if status == 1 or status == 2 then
+				ENEMY_Healers[name].status = status
+				ENEMY_Healers[name].reason = reason
+			end
+			ENEMY_Healers[name].tries  = ENEMY_Healers[name].tries + 1
 		end	
-		return status;
+		return status
 	end
-	return nil;
+	return nil
 end
 
 local coloredLOG = {
@@ -5271,52 +5273,51 @@ local function coloredClass(class)
 	return "|cff"..ClassHexColor(class)..class.."|r";
 end
 
-function BattlegroundTargets:GetHealerStatusByBuff(enemyID, name, class)
-	local i = 1;
-	local unitStatus = 0;
-	local buffOwnerID, spellID;
-	local reason;
+function BattlegroundTargets:GetHealerStatusByBuff(enemyID, name, class, prevStatus)
+	local i = 1
+	local buffOwnerID, spellID
+	local reason
 	if class == "PALADIN" or class == "DRUID" then
-		local maxpower = UnitPowerMax(enemyID, 0); -- Check Mana.
+		local maxpower = UnitPowerMax(enemyID, 0) -- Check Mana.
 		if maxpower and maxpower ~= 0 then
-			local tpl; 
-			local status;
+			local tpl
+			local status
 			if class == "PALADIN" then
-				status = tonumber(maxpower) > 16000 and 2 or 1;
+				status = tonumber(maxpower) > 16000 and 2 or 1
 				tpl = status == 1 and coloredLOG.dd or coloredLOG.heal;
 			else -- druid
-				status = tonumber(maxpower) < 12000 and 1 or 0;
+				status = tonumber(maxpower) < 12000 and 1 or 0
 				tpl = status == 1 and coloredLOG.dd
 			end
 			if status > 0 then
 				HDLog(coloredLOG.log.." "..coloredClass(class).." "..tpl.." detected. "..coloredLOG.reason.." max-mana is "..maxpower, coloredLOG.name, name, coloredLOG.target, enemyID, coloredLOG.tries, ENEMY_Healers[name].tries+1,"\n\n")
-				reason = "Max mana: "..maxpower;
-				return status, reason;
+				reason = "Max mana: "..maxpower
+				return status, reason
 			end
 		else 
-			return 0; 
+			return prevStatus
 		end
 	end
-	local buff = UnitBuff(enemyID, i);
+	local buff = UnitBuff(enemyID, i)
 	while buff do
-		buff,_,_,_,_,_,_,buffOwnerID,_,_,spellID = UnitBuff(enemyID, i);
+		buff,_,_,_,_,_,_,buffOwnerID,_,_,spellID = UnitBuff(enemyID, i)
 		for _,val in ipairs(HEALER_SpellBase["HealerBuffs"]) do
-			if (GetSpellInfo(val) == buff) then
-				local owner = buffOwnerID or "-";
+			if GetSpellInfo(val) == buff then
+				local owner = buffOwnerID or "-"
 				HDLog(coloredLOG.log.." "..coloredClass(class).." "..coloredLOG.heal.." detected. "..coloredLOG.reason.." "..buff,val.." "..coloredLOG.name, name, coloredLOG.target, enemyID,"|cfff4db49OWNER:|r "..owner, coloredLOG.tries, ENEMY_Healers[name].tries+1,"\n\n")
-				return 2, "buff: "..buff.." spellID: "..val;
+				return 2, "buff: "..buff.." spellID: "..val
 			end
 		end
 		for _, val in ipairs(HEALER_SpellBase["DamageBuffs"]) do
-			if (GetSpellInfo(val) == buff) then
-				local owner = buffOwnerID or "-";
+			if GetSpellInfo(val) == buff then
+				local owner = buffOwnerID or "-"
 				HDLog(coloredLOG.log.." "..coloredClass(class).." "..coloredLOG.dd.." detected. "..coloredLOG.reason.." "..buff,val.." "..coloredLOG.name, name, coloredLOG.target, enemyID,"|cfff4db49OWNER:|r "..owner, coloredLOG.tries, ENEMY_Healers[name].tries+1,"\n\n")
-				return 1, "buff: "..buff.." spellID: "..val;
+				return 1, "buff: "..buff.." spellID: "..val
 			end
 		end
-		i = i + 1;
+		i = i + 1
 	end;
-	return unitStatus; 
+	return prevStatus
 end
 
 function BattlegroundTargets:GetHealerStatus(name, class) 
