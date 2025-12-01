@@ -206,10 +206,12 @@ local function isOutOfDate(dataStamp)
  
  local function removeDataDB(DB, link)
     local searchGroup = DB[link[4]][link[3]]
-    local unitName = link[2]
-    
-    local _, pos = contains(searchGroup, unitName);
-    table_remove(searchGroup, pos);
+    if not searchGroup then return end
+
+    local _, pos = contains(searchGroup, link[2]);
+    if pos then
+        table_remove(searchGroup, pos)
+    end
  end
  
  
