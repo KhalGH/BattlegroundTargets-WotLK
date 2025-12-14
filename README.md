@@ -25,12 +25,12 @@ This a modified version of Nobrainx's extended backport for WotLK.
 - **`/bgt dbStoragePeriod <#>`** &nbsp; → &nbsp; Sets how long healer detections are retained in the DB (# in months, 0–11)
 
 ## Installation
-1. [Download](https://github.com/KhalGH/BattlegroundTargets-WotLK/releases/download/v1.2.1/BattlegroundTargets-v1.2.1.zip) the addon
+1. [Download](https://github.com/KhalGH/BattlegroundTargets-WotLK/releases/download/v1.2.2/BattlegroundTargets-v1.2.2.zip) the addon
 2. Extract the **BattlegroundTargets** folder into `World of Warcraft/Interface/AddOns/`.  
 3. Restart the game and enable the addon.
 
 ## Information  
-- **Addon Version:** CF-HD v1.2.1  
+- **Addon Version:** CF-HD v1.2.2  
 - **Game Version:** 3.3.5a (WotLK)
 - **Original Author:** kunda
 - **Modified by:** Nobrainx, Khal
