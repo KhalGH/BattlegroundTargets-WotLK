@@ -141,7 +141,7 @@ BattlegroundTargets_Character = {};
 BattlegroundTargets_HealersDB = {};
 
 local BattlegroundTargets = CreateFrame("Frame");
-local MOD_VERSION = "v1.2.1";
+local MOD_VERSION = "v1.2.2";
 
 local L   = BattlegroundTargets_Localization;
 local BGN = BattlegroundTargets_BGNames;
@@ -293,6 +293,15 @@ local BGStatus = {}
 for i = 1, MAX_BATTLEFIELD_QUEUES do
 	BGStatus[i] = true
 end
+
+local BGNameByID = {
+	[444] = "Warsong Gulch",
+	[462] = "Arathi Basin",
+	[402] = "Alterac Valley",
+	[483] = "Eye of the Storm",
+	[513] = "Strand of the Ancients",
+	[541] = "Isle of Conquest",
+}
 
 local currentSize = 10;
 local bgSize = {
@@ -5652,7 +5661,17 @@ function BattlegroundTargets:IsBattleground()
 		queueStatus, queueMapName = GetBattlefieldStatus(i);
 		if(queueStatus == "active") then
 			bgName = BGN[queueMapName]
-			break;
+			break
+		end
+	end
+	if not bgName then
+		bgName = BGN[GetRealZoneText()]
+		if not bgName then
+			SetMapToCurrentZone()
+			bgName = BGNameByID[GetCurrentMapAreaID()]
+			if not bgName then
+				Print("ERROR: Unknown Battleground Name")
+			end
 		end
 	end
 
@@ -5699,36 +5718,23 @@ function BattlegroundTargets:IsBattleground()
 	end
 
 	if bgName then
-		currentSize = bgSize[ bgName ];
-		reSizeCheck = 10;
-		local flagBGnum = flagBG[ bgName ];
-		if(flagBGnum) then
-			isFlagBG = flagBGnum;
+		currentSize = bgSize[bgName]
+		reSizeCheck = 10
+		local flagBGnum = flagBG[bgName]
+		if flagBGnum then
+			isFlagBG = flagBGnum
 		end
 	else
-		local zone = GetRealZoneText();
-		if(BGN[zone]) then
-			currentSize = bgSize[ BGN[zone] ];
-			reSizeCheck = 10;
-			local flagBGnum = flagBG[ BGN[zone] ];
-			if(flagBGnum) then
-				isFlagBG = flagBGnum;
-			end
-		else
-			if(reSizeCheck >= 10) then
-				Print("ERROR", "unknown battleground name", locale, queueMapName, zone);
-			end
-			currentSize = 10;
-			reSizeCheck = reSizeCheck + 1;
-		end
+		currentSize = 10
+		reSizeCheck = reSizeCheck + 1
 	end
 	
-	if(playerLevel >= maxLevel) then
-		isLowLevel = nil;
+	if playerLevel >= maxLevel then
+		isLowLevel = nil
 	else
-		isLowLevel = true;
+		isLowLevel = true
 	end
-	
+
 	if(inCombat or InCombatLockdown()) then
 		reCheckBG = true;
 	else
