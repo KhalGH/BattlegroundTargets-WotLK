@@ -30,7 +30,7 @@ This a modified version of Nobrainx's extended backport for WotLK.
 3. Restart the game and enable the addon.
 
 ## Information  
-- **Addon Version:** CF-HD v1.2.2  
+- **Addon Version:** CF-HD v1.2.3  
 - **Game Version:** 3.3.5a (WotLK)
 - **Original Author:** kunda
 - **Modified by:** Nobrainx, Khal
