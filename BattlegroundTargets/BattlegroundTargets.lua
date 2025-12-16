@@ -141,7 +141,7 @@ BattlegroundTargets_Character = {};
 BattlegroundTargets_HealersDB = {};
 
 local BattlegroundTargets = CreateFrame("Frame");
-local MOD_VERSION = "v1.2.2";
+local MOD_VERSION = "v1.2.3";
 
 local L   = BattlegroundTargets_Localization;
 local BGN = BattlegroundTargets_BGNames;
@@ -592,12 +592,19 @@ playerUnitID["focus"]     = 1;
 playerUnitID["mouseover"] = 1;
 
 local startMapCoordsA = {
-	["Alterac Valley"]          = { 417, 424, -56,  -26  },
-	["Arathi Basin"]            = { 230, 258, -105, -78  },
-	["Isle of Conquest"]        = { 300, 419, -429, -385 },
-	["Eye of the Storm"]        = { 360, 375, -144, -125 },
-	["Warsong Gulch"]           = { 370, 402, -85,  -64  },
-	["Strand of the Ancients"]  = { 374, 392, -310, -290 }, -- defending faction start area
+	["Alterac Valley"]          = {0.536291122436520, 0.075191102921963},
+	["Arathi Basin"]            = {0.311796873807910, 0.166063979268070},
+	["Isle of Conquest"]        = {0.529043495655060, 0.809421181678770},
+	["Eye of the Storm"]        = {0.468470871448520, 0.260840028524400},
+	["Warsong Gulch"]           = {0.488647907972340, 0.135069295763970},
+}
+
+local startMapCoordsH = {
+	["Alterac Valley"]          = {0.564327776432040, 0.893128037452700},
+	["Arathi Basin"]            = {0.670242488384250, 0.704044997692110},
+	["Isle of Conquest"]        = {0.505528688430790, 0.229658007621770},
+	["Eye of the Storm"]        = {0.493651777505870, 0.733544349670410},
+	["Warsong Gulch"]           = {0.530568122863770, 0.907359302043910},
 }
 
 local function Print(...)
@@ -615,37 +622,30 @@ local function contains(table, element)
 	return false
 end
 
-function GetRealCoords(rawX, rawY)
-	local realX, realY = 0, 0;
-	realX = rawX * 783; -- X -17
-	realY = -rawY * 522; -- Y -78
-	return realX, realY;
-end
-
 local function inRange(val, min, max)
-    if not min or not max then return nil end;
-    if min <= val and val <= max then return true;
-    else return false end;
+	return min <= val and val <= max
 end
 
-local function isAllyStartPosition(rx, ry, mapName)
-    local cords = startMapCoordsA[mapName];
-    local tx, ty;
-    for i=1, #cords, 2 do
-        if i == 1 then tx = inRange(rx, cords[i], cords[i+1]);
-		else ty = inRange(ry, cords[i], cords[i+1]); end
-    end
-    if tx and ty then return true end
+local function isAllyStartPosition(x, y, mapName)
+    local cords = startMapCoordsA[mapName]
+    if not cords then return end
+	if inRange(x, cords[1] - 0.001, cords[1] + 0.001) and inRange(y, cords[2] - 0.001, cords[2] + 0.001) then
+		return true
+	end
 end
 
-local function isSotaDefenderPosition(rx, ry)
-    local cords = startMapCoordsA["Strand of the Ancients"];
-    local tx, ty;
-    for i=1, #cords, 2 do
-        if i == 1 then tx = inRange(rx, cords[i], cords[i+1]);
-		else ty = inRange(ry, cords[i], cords[i+1]); end
+local function isHordeStartPosition(x, y, mapName)
+    local cords = startMapCoordsH[mapName]
+    if not cords then return end
+	if inRange(x, cords[1] - 0.001, cords[1] + 0.001) and inRange(y, cords[2] - 0.001, cords[2] + 0.001) then
+		return true
+	end
+end
+
+local function isSotaDefenderPosition(x, y)
+    if inRange(x, 0.48, 0.50) and inRange(y, 0.565, 0.595) then
+        return true
     end
-    if tx and ty then return true end
 end
 
 local function ClassHexColor(class)
@@ -5454,15 +5454,6 @@ function BattlegroundTargets:BattlefieldScoreUpdate()
 	local diff = curTime - latestScoreUpdate;
 	if(diff < 1) then return end
 
-	local queueStatus, queueMapName, bgName;
-	for i=1, MAX_BATTLEFIELD_QUEUES do
-		queueStatus, queueMapName = GetBattlefieldStatus(i);
-		if(queueStatus == "active") then
-			bgName = BGN[queueMapName];
-			break;
-		end
-	end
-
 	if(inCombat or InCombatLockdown()) then
 		if(curTime - latestScoreWarning) then
 			GVAR.ScoreUpdateTexture:Show();
@@ -5539,19 +5530,29 @@ function BattlegroundTargets:BattlefieldScoreUpdate()
 			end
 		end
 	end
-	
-	if(reSizeCheck >= 10) then return; end
-	
-	if(bgName) then
-		BattlegroundTargets:BattlefieldCheck();
-	else
-		local zone = GetRealZoneText();
-		
-		if BGN[zone] then
-			BattlegroundTargets:BattlefieldCheck();
-		else
-			reSizeCheck = reSizeCheck + 1;
+
+	if(reSizeCheck >= 10) then return end
+
+	local queueStatus, queueMapName, bgName;
+	for i=1, MAX_BATTLEFIELD_QUEUES do
+		queueStatus, queueMapName = GetBattlefieldStatus(i);
+		if(queueStatus == "active") then
+			bgName = BGN[queueMapName];
+			break;
 		end
+	end
+	if not bgName then
+		bgName = BGN[GetRealZoneText()]
+		if not bgName then
+			SetMapToCurrentZone()
+			bgName = BGNameByID[GetCurrentMapAreaID()]
+		end
+	end
+
+	if bgName then
+		BattlegroundTargets:BattlefieldCheck()
+	else
+		reSizeCheck = reSizeCheck + 1
 	end
 end
 
@@ -5647,6 +5648,54 @@ function BattlegroundTargets:BattlefieldCheck()
 	end
 end
 
+local delayedFactionCheck = CreateFrame("Frame")
+delayedFactionCheck:Hide()
+delayedFactionCheck:SetScript("OnUpdate", function(self, elapsed)
+	if GetNumBattlefieldScores() == 0 and inBattleground then return end
+	self:Hide()
+	if inBattleground then
+		for i = 1, GetNumBattlefieldScores() do
+			local iName, _, _, _, _, iFaction = GetBattlefieldScore(i)
+			if playerName == iName then
+				local faction = iFaction
+				if faction == 0 then
+					Print(delayedFactionCheck.bgName, "- |cffcc1a1aHorde|r ")
+				elseif faction == 1 then
+					Print(delayedFactionCheck.bgName, "- |cff3060ffAlliance|r ")
+				else
+					faction = BattlegroundTargets:NameFactionToNumber(BattlegroundTargets_Character.NativeFaction) or 1
+				end
+				BattlegroundTargets:ValidateFactionBG(faction)
+				break
+			end
+		end
+		if(OPT.ButtonShowFlag[currentSize]) then
+			if delayedFactionCheck.bgName == "Warsong Gulch" then
+				local flagIcon;
+				if(playerFactionBG == 0) then
+					flagIcon = "Interface\\WorldStateFrame\\HordeFlag";
+				else
+					flagIcon = "Interface\\WorldStateFrame\\AllianceFlag";
+				end
+				for i = 1, currentSize do
+					GVAR.TargetButton[i].FlagTexture:SetTexture(flagIcon);
+				end
+			elseif delayedFactionCheck.bgName == "Eye of the Storm" then
+				local flagIcon;
+				if(playerFactionBG == 0) then
+					flagIcon = "Interface\\WorldStateFrame\\AllianceFlag";
+				else
+					flagIcon = "Interface\\WorldStateFrame\\HordeFlag";
+				end
+				for i = 1, currentSize do
+					GVAR.TargetButton[i].FlagTexture:SetTexture(flagIcon);
+				end					
+			end
+		end
+	end
+	delayedFactionCheck.bgName = nil
+end)
+
 function BattlegroundTargets:IsBattleground()
 	inBattleground = true;
 	isFlagBG = 0;
@@ -5656,7 +5705,7 @@ function BattlegroundTargets:IsBattleground()
 		HDLog(L["Permanent logging of healers detection is enabled. Type |cff55c912/bgt hdlogAlways|r again to disable."]);
 	end
 
-	local queueStatus, queueMapName, bgName;
+	local queueStatus, queueMapName, bgName, delayedCheck
 	for i = 1, MAX_BATTLEFIELD_QUEUES do
 		queueStatus, queueMapName = GetBattlefieldStatus(i);
 		if(queueStatus == "active") then
@@ -5670,49 +5719,59 @@ function BattlegroundTargets:IsBattleground()
 			SetMapToCurrentZone()
 			bgName = BGNameByID[GetCurrentMapAreaID()]
 			if not bgName then
-				Print("ERROR: Unknown Battleground Name")
+				Print("ERROR: Failed to identify battleground")
 			end
 		end
 	end
 
 	if not BattlegroundTargets_Character.TempFaction then
-		local faction = BattlegroundTargets:NameFactionToNumber(BattlegroundTargets_Character.NativeFaction) or 1
+		local faction
 		if bgName then
 			-- Detects faction from starting coords to support any cross-faction system
-			local rawx, rawy = GetPlayerMapPosition("player");
-			if rawx and rawy then
-				local rx, ry = GetRealCoords(rawx, rawy)
-				if bgName == "Strand of the Ancients" then -- by Khal
+			local x, y = GetPlayerMapPosition("player")
+			if x and y then
+				if bgName == "Strand of the Ancients" then
 					if select(2, GetWorldStateUIInfo(2)) == 0 then
 						-- Ally Defending SotA
-						if isSotaDefenderPosition(rx, ry) then
+						if isSotaDefenderPosition(x, y) then
 							faction = 1
 						else
 							faction = 0
 						end
 					else
-						-- Ally Attacking SotA
-						if isSotaDefenderPosition(rx, ry) then
+						-- Horde Defending SotA
+						if isSotaDefenderPosition(x, y) then
 							faction = 0
 						else
 							faction = 1
 						end
 					end
 				else
-					if isAllyStartPosition(rx, ry, bgName) then 	
+					if isAllyStartPosition(x, y, bgName) then 	
 						faction = 1
-					else 
+					elseif isHordeStartPosition(x, y, bgName) then
 						faction = 0
+					else
+						delayedCheck = true
+						if not delayedFactionCheck:IsShown() then
+							BattlegroundTargets:BattlefieldScoreRequest()
+							delayedFactionCheck.bgName = bgName
+							delayedFactionCheck:Show()
+						end
 					end
 				end
 			end
+		end
+		if not delayedCheck then
 			if faction == 0 then
 				Print(bgName, "- |cffcc1a1aHorde|r ")
 			elseif faction == 1 then
 				Print(bgName, "- |cff3060ffAlliance|r ")
+			else
+				faction = BattlegroundTargets:NameFactionToNumber(BattlegroundTargets_Character.NativeFaction) or 1
 			end
+			BattlegroundTargets:ValidateFactionBG(faction)
 		end
-		BattlegroundTargets:ValidateFactionBG(faction)
 	else
 		BattlegroundTargets:ValidateFactionBG(BattlegroundTargets_Character.TempFaction);
 	end
@@ -5756,27 +5815,29 @@ function BattlegroundTargets:IsBattleground()
 				end
 			end
 			BattlegroundTargets:SetupButtonLayout();
-			if(OPT.ButtonShowFlag[currentSize]) then
-				if bgName == "Warsong Gulch" then
-					local flagIcon;
-					if(playerFactionBG == 0) then
-						flagIcon = "Interface\\WorldStateFrame\\HordeFlag";
-					else
-						flagIcon = "Interface\\WorldStateFrame\\AllianceFlag";
+			if not delayedCheck then
+				if(OPT.ButtonShowFlag[currentSize]) then
+					if bgName == "Warsong Gulch" then
+						local flagIcon;
+						if(playerFactionBG == 0) then
+							flagIcon = "Interface\\WorldStateFrame\\HordeFlag";
+						else
+							flagIcon = "Interface\\WorldStateFrame\\AllianceFlag";
+						end
+						for i = 1, currentSize do
+							GVAR.TargetButton[i].FlagTexture:SetTexture(flagIcon);
+						end
+					elseif bgName == "Eye of the Storm" then
+						local flagIcon;
+						if(playerFactionBG == 0) then
+							flagIcon = "Interface\\WorldStateFrame\\AllianceFlag";
+						else
+							flagIcon = "Interface\\WorldStateFrame\\HordeFlag";
+						end
+						for i = 1, currentSize do
+							GVAR.TargetButton[i].FlagTexture:SetTexture(flagIcon);
+						end					
 					end
-					for i = 1, currentSize do
-						GVAR.TargetButton[i].FlagTexture:SetTexture(flagIcon);
-					end
-				elseif bgName == "Eye of the Storm" then
-					local flagIcon;
-					if(playerFactionBG == 0) then
-						flagIcon = "Interface\\WorldStateFrame\\AllianceFlag";
-					else
-						flagIcon = "Interface\\WorldStateFrame\\HordeFlag";
-					end
-					for i = 1, currentSize do
-						GVAR.TargetButton[i].FlagTexture:SetTexture(flagIcon);
-					end					
 				end
 			end
 		else
