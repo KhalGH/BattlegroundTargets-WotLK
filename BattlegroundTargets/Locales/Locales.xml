@@ -1,0 +1,15 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="BattlegroundTargets-localized-bgnames.lua"/>
+	<Script file="BattlegroundTargets-localized-flag.lua"/>
+	<Script file="BattlegroundTargets-localized-racenames.lua"/>
+	<Script file="BattlegroundTargets-localization-enUS.lua"/>
+	<Script file="BattlegroundTargets-localization-deDE.lua"/>
+	<Script file="BattlegroundTargets-localization-esES.lua"/>
+	<Script file="BattlegroundTargets-localization-esMX.lua"/>
+	<Script file="BattlegroundTargets-localization-frFR.lua"/>
+	<Script file="BattlegroundTargets-localization-koKR.lua"/>
+	<Script file="BattlegroundTargets-localization-ptBR.lua"/>
+	<Script file="BattlegroundTargets-localization-ruRU.lua"/>
+	<Script file="BattlegroundTargets-localization-zhCN.lua"/>
+	<Script file="BattlegroundTargets-localization-zhTW.lua"/>
+</Ui>

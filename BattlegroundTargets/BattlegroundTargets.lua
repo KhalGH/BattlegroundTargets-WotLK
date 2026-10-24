@@ -136,14 +136,14 @@
 -- -------------------------------------------------------------------------- --
 
 -- ---------------------------------------------------------------------------------------------------------------------
+
 BattlegroundTargets_Options   = {};
 BattlegroundTargets_Character = {};
 BattlegroundTargets_HealersDB = {};
 
 local BattlegroundTargets = CreateFrame("Frame");
-local MOD_VERSION = "v1.2.3";
 
-local L   = BattlegroundTargets_Localization;
+local L = BattlegroundTargets_Localization;
 local BGN = BattlegroundTargets_BGNames;
 local FLG = BattlegroundTargets_Flag;
 local RNA = BattlegroundTargets_RaceNames;
@@ -232,7 +232,7 @@ local leaderThrottle = 0;                    -- leader: C.heckUnitTarget()
 local leaderFrequency = 5;                   -- leader: if isLeader is true then pause 5 times(events) until next check (reason: leader does not change often in a bg, irrelevant info anyway)
 -- FORCE UPDATE (precise results) --------------------------------------------------------------------------------------
 local assistForceUpdate = GetTime();         -- assist: C.heckUnitTarget()
-local assistFrequency = 0.5;               	 -- assist: immediate assist target check (reason: target loss and I don't know why... -> brute force)
+local assistFrequency = 0.5;               	 -- assist: immediate assist target check (reason: target loss and I don't know why.. -> brute force)
 local targetCountForceUpdate = GetTime();    -- targetcount: C.heckUnitTarget()
 local targetCountFrequency = 30;          	 -- targetcount: a complete raid/raidtarget check every 30 seconds (reason: target loss and I don't know why... -> brute force)
 -- WARNING -------------------------------------------------------------------------------------------------------------
@@ -270,7 +270,7 @@ local FRIEND_Names         = {};  -- key/value | key = friendName, value = 1
 local TARGET_Names         = {};  -- key/value | key = friendName, value = enemyName
 local SPELL_Range          = {};  -- key/value | key = spellID, value = maxRange
 local ENEMY_Healers        = {};  -- Hash table. key/value | key = Enemy name, value = table where with options: status, classToken, reason (which spell has been detected)
-local UITitle = "BattlegroundTargets [CF-HD "..MOD_VERSION.."]"
+local UITitle = "BattlegroundTargets [CF-HD v" .. GetAddOnMetadata((...), "Version") .. "]"
 
 local testSize     = 10;
 local testIcon1    = 2;
@@ -5999,7 +5999,7 @@ function BattlegroundTargets:IsNotBattleground()
 	ResetBattlegroundFlags()
 	local factionID = BattlegroundTargets:NameFactionToNumber(BattlegroundTargets_Character.NativeFaction);
 	MiniMapBattlefieldIcon:SetTexture(battleFieldIconTextures[factionID])
-	MiniMapBattlefieldFrame:SetNormalTexture(battleFieldIconTextures[factionID])
+	MiniMapBattlefieldFrame:SetNormalTexture("")
 	if OPT.ButtonShowHealer[10] or OPT.ButtonShowHealer[15] or OPT.ButtonShowHealer[40] then
 		if hdlog or BattlegroundTargets_Options.hdlog then BattlegroundTargets:HDreport() end;
 		local DBisEnable = BattlegroundTargets_Options.DB and BattlegroundTargets_Options.DB.outOfDateRange and BattlegroundTargets_Options.DB.outOfDateRange > 0;
@@ -6745,7 +6745,6 @@ local function OnEvent(self, event, ...)
 
 	elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
 		if isConfig or isDeadUpdateStop then return end
-		--local timestamp, subevent, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, spellID, spellName, spellSchool = ...	
 		local _, _, _, sourceName, _, _, destName, _, spellID = ...
 		if not sourceName or not destName or not spellID then return end
 		BattlegroundTargets:DetectHealerByAOEBuffs(...)
@@ -6842,6 +6841,7 @@ local function OnEvent(self, event, ...)
 			end
 		end)
 		table.insert(UISpecialFrames, "BattlegroundTargets_OptionsFrame")
+		BattlefieldIconText:SetDrawLayer("OVERLAY")
 		BattlegroundTargets:UnregisterEvent("PLAYER_LOGIN")
 
 	elseif event == "PLAYER_ENTERING_WORLD" then 
